@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -17,6 +17,13 @@ import { useAppContext } from "../../../../AppProvider";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../db/firebase";
 import LottieView from "lottie-react-native";
+import {
+  add,
+  find,
+  loadingProcess,
+  serverTimestamp,
+} from "../../../helpers/databaseHelper";
+import { useFocusEffect } from "@react-navigation/native";
 
 const SuccessAnimation = ({ visible, onClose }) => {
   return (
@@ -99,6 +106,7 @@ const VerificationStatusScreen = ({ navigation, route }) => {
   const { userId } = useAppContext();
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [percentage, setPercentage] = useState(25);
   const [verificationStatus, setVerificationStatus] = useState({
     profileRegistration: true,
     serviceAdded: true,
@@ -107,7 +115,7 @@ const VerificationStatusScreen = ({ navigation, route }) => {
     adminApproval: false,
   });
 
-  const steps = [
+  const [steps, setSteps] = useState([
     {
       step: 1,
       title: "Business Profile Registration",
@@ -119,21 +127,21 @@ const VerificationStatusScreen = ({ navigation, route }) => {
       step: 2,
       title: "Add Business Services",
       description: "Select the services your business provides.",
-      status: "completed",
+      status: "current",
       icon: "plus-circle",
     },
     {
       step: 3,
       title: "Business Documents",
       description: "Upload all required business documents and permits.",
-      status: "completed",
+      status: "current",
       icon: "upload",
     },
     {
       step: 4,
       title: "Business Hours",
       description: "Set your business operating hours and availability.",
-      status: "completed",
+      status: "current",
       icon: "clock",
     },
     {
@@ -143,58 +151,117 @@ const VerificationStatusScreen = ({ navigation, route }) => {
       status: "current",
       icon: "shield",
     },
-  ];
+  ]);
 
-  useEffect(() => {
-    if (route.params?.fromAddServices) {
-      setVerificationStatus((prev) => ({
-        ...prev,
-        serviceAdded: true,
-        documentsUploaded: true,
-        currentStep: 4,
-      }));
-    }
-  }, [route.params]);
+  useFocusEffect(
+    useCallback(() => {
+      loadingProcess(async () => {
+        let percent = 25;
+        const userSnap = await find("users", userId);
+        const userData = userSnap.data();
+        if (userData.service) percent += 25;
+
+        const docSnap = await find("providerDocuments", userId);
+        if (docSnap.exists()) percent += 25;
+
+        const busHoursSnap = await find("providerBusinessHours", userId);
+        if (busHoursSnap.exists()) percent += 25;
+        setSteps([
+          {
+            step: 1,
+            title: "Business Profile Registration",
+            description: "Basic business information setup",
+            status: "completed",
+            icon: "check-circle",
+          },
+          {
+            step: 2,
+            title: "Add Business Services",
+            description: "Select the services your business provides.",
+            status: userData.service ? "completed" : "current",
+            icon: "plus-circle",
+          },
+          {
+            step: 3,
+            title: "Business Documents",
+            description: "Upload all required business documents and permits.",
+            status: docSnap.exists() ? "completed" : "current",
+            icon: "upload",
+          },
+          {
+            step: 4,
+            title: "Business Hours",
+            description: "Set your business operating hours and availability.",
+            status: busHoursSnap.exists() ? "completed" : "current",
+            icon: "clock",
+          },
+          {
+            step: 5,
+            title: "Business Verification",
+            description:
+              "Final review and verification of your business details.",
+            status: "current",
+            icon: "shield",
+          },
+        ]);
+        setPercentage(percent);
+      });
+    }, [])
+  );
 
   const handleStepPress = (step) => {
-    if (step.status === "completed") {
-      switch (step.step) {
-        case 1:
-          navigation.navigate("BusinessProfile", { isEditing: false });
-          break;
-        case 2:
-          navigation.navigate("AddServices", { isEditing: true });
-          break;
-        case 3:
-          navigation.navigate("BusinessDocuments", { isEditing: true });
-          break;
-        case 4:
-          navigation.navigate("BusinessHours", { isEditing: true });
-          break;
-        default:
-          break;
-      }
-    } else if (step.status === "current" && step.step === 5) {
+    if (step.status === "current" && step.step === 5) {
       Alert.alert(
         "Under Review",
         "Your business application is currently under review. Our team will verify your documents and contact you soon.",
         [{ text: "OK" }]
       );
+      return;
+    }
+
+    switch (step.step) {
+      case 1:
+        navigation.navigate("EditProfile");
+        break;
+      case 2:
+        navigation.navigate("AddServices");
+        break;
+      case 3:
+        navigation.navigate("BusinessDocuments");
+        break;
+      case 4:
+        navigation.navigate("BusinessHours");
+        break;
+      default:
+        break;
     }
   };
 
   const handleCheckStatus = () => {
     if (isSubmitted) return;
-    setShowSuccess(true);
-    setIsSubmitted(true);
 
-    setTimeout(() => {
-      setShowSuccess(false);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Main" }],
+    if (percentage != 100) {
+      alert("Please complete the verification status first!!!");
+      return;
+    }
+
+    loadingProcess(async () => {
+      await add("toVerifyProviders", {
+        providerId: userId,
+        verified: false,
+        sentAt: serverTimestamp(),
       });
-    }, 5000);
+      setShowSuccess(true);
+      setIsSubmitted(true);
+
+      setTimeout(() => {
+        setShowSuccess(false);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Main" }],
+        });
+      }, 5000);
+    });
   };
 
   return (
@@ -221,9 +288,9 @@ const VerificationStatusScreen = ({ navigation, route }) => {
       {/* Progress Bar */}
       <View style={styles.progressContainer}>
         <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: "100%" }]} />
+          <View style={[styles.progressFill, { width: percentage + "%" }]} />
         </View>
-        <Text style={styles.progressText}>100% Complete</Text>
+        <Text style={styles.progressText}>{percentage}% Complete</Text>
       </View>
 
       {/* Steps List */}

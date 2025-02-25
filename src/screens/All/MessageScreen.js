@@ -95,9 +95,9 @@ const MessageScreen = ({ route, navigation }) => {
       });
       if (temp.length == 0) return;
 
-      if (scrollViewRef.current) {
-        scrollViewRef.current.scrollToEnd({ animated: false });
-      }
+      // if (scrollViewRef.current) {
+      //   scrollViewRef.current.scrollToEnd({ animated: false });
+      // }
       setMessages(temp);
     });
 
@@ -232,6 +232,7 @@ const MessageScreen = ({ route, navigation }) => {
         ) : (
           <ScrollView
             ref={scrollViewRef}
+            onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
             contentContainerStyle={styles.messageList}
             scrollEventThrottle={16}
           >

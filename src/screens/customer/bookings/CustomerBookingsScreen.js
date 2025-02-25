@@ -18,6 +18,7 @@ import {
   find,
   get,
   loadingProcess,
+  serverTimestamp,
   update,
   where,
 } from "../../../helpers/databaseHelper";
@@ -84,7 +85,10 @@ const CustomerBookingsScreen = ({ navigation }) => {
 
   const onCancel = (id, providerId) => {
     loadingProcess(async () => {
-      await update("bookings", id, { status: "Cancelled" });
+      await update("bookings", id, {
+        status: "Cancelled",
+        cancelledAt: serverTimestamp(),
+      });
       addNotif(
         providerId,
         `${userName} Cancelled a booking`,

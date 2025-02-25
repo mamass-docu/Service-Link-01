@@ -84,6 +84,7 @@ const JobStatusScreen = ({ route, navigation }) => {
       createdAt: DateTimeConverter(booking.createdAt),
       confirmedAt: DateTimeConverter(booking.confirmedAt),
       rejectedAt: DateTimeConverter(booking.rejectedAt),
+      cancelledAt: DateTimeConverter(booking.cancelledAt),
       // completedAt: DateTimeConverter(booking.completedAt),
     });
   };
@@ -310,6 +311,12 @@ const JobStatusScreen = ({ route, navigation }) => {
               text="Job Completed"
               hideLine={true}
               date={completedAt}
+            />
+
+            <Status
+              active={currentStatus == "Cancelled"}
+              text="Job Cancelled"
+              date={user?.cancelledAt}
             />
           </View>
         </View>

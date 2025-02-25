@@ -15,6 +15,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  getDocs,
   where,
 } from "firebase/firestore";
 import { useAppContext } from "../../../AppProvider";
@@ -33,132 +34,150 @@ export default function MessengerScreen({ navigation }) {
     setIsLoading(true);
     let loaded = false;
     let users = {};
-    let usersChatted = {};
+    let booked = {};
+    // let usersChatted = {};
     let unsubscribeMess = null;
+    let unsubscribeActive = null;
 
-    const messengerQuery =
-      userRole == "Provider"
-        ? query(collection(db, "users"))
-        : query(collection(db, "users"), where("role", "!=", "Admin"));
-
-    const unsubscribeActive = onSnapshot(messengerQuery, (snapshot) => {
-      let activeUsers = [];
-      // let temp = messengers;
-      users = {};
-      console.log("users snap messager");
-
-      snapshot.docs.forEach((doc) => {
-        if (doc.id == userId) return;
-
-        const user = doc.data();
-
-        users[doc.id] = {
-          name: user.name,
-          image: user.image ?? null,
-          isOnline: user.isOnline ?? false,
-        };
-        // for (let i in temp) {
-        //   let mess = temp[i];
-        //   if (mess.otherUserId != doc.id) continue;
-
-        //   temp[i] = {
-        //     ...mess,
-        //     otherUserName: user.name,
-        //     otherUserImage: user.image,
-        //     isOnline: user.isOnline,
-        //   };
-        //   break;
-        // }
-
-        if (!user.isOnline || !usersChatted[doc.id]) return;
-
-        usersChatted[doc.id] = true;
-        activeUsers.push({
-          name: user.name,
-          otherUserId: doc.id,
-          otherUserName: user.name,
-          otherUserImage: user.image ?? null,
-        });
+    getDocs(
+      query(
+        collection(db, "bookings"),
+        where(
+          userRole == "Customer" ? "customerId" : "providerId",
+          "==",
+          userId
+        )
+      )
+    ).then((docs) => {
+      const key = userRole == "Provider" ? "customerId" : "providerId";
+      docs.forEach((dc) => {
+        booked[dc.data()[key]] = true;
       });
-      console.log("setting of user");
-
-      // setMessengers(temp);
-      if (activeUsers.length > 0) setChatHeads(activeUsers);
-
-      if (unsubscribeMess) return;
-
-      const messageQuery = query(
-        collection(db, "messages"),
-        where("participants", "array-contains", userId),
-        orderBy("sentAt", "desc")
+      const messengerQuery = query(
+        collection(db, "users"),
+        where("role", "!=", "Admin")
       );
 
-      unsubscribeMess = onSnapshot(messageQuery, (snapshot) => {
-        let temp = [];
-        // console.log(users);
-        let checked = {};
-        let temp1 = [];
+      unsubscribeActive = onSnapshot(messengerQuery, (snapshot) => {
+        let activeUsers = [];
+        // let temp = messengers;
+        users = {};
+        console.log("users snap messager");
 
-        try {
-          for (let i in snapshot.docs) {
-            const message = snapshot.docs[i].data();
+        snapshot.docs.forEach((doc) => {
+          if (doc.id == userId) return;
 
-            const otherUserId =
-              message.participants[0] == userId
-                ? message.participants[1]
-                : message.participants[0];
+          const user = doc.data();
 
-            if (checked[otherUserId] || !otherUserId || userId == otherUserId)
-              continue;
+          users[doc.id] = {
+            name: user.name,
+            image: user.image ?? null,
+            isOnline: user.isOnline ?? false,
+          };
+          // for (let i in temp) {
+          //   let mess = temp[i];
+          //   if (mess.otherUserId != doc.id) continue;
 
-            checked[otherUserId] = true;
-            const userData = users[otherUserId];
+          //   temp[i] = {
+          //     ...mess,
+          //     otherUserName: user.name,
+          //     otherUserImage: user.image,
+          //     isOnline: user.isOnline,
+          //   };
+          //   break;
+          // }
 
-            if (!usersChatted[otherUserId]) {
-              if (userData.isOnline)
-                temp1.push({
-                  name: userData.name,
-                  otherUserId: otherUserId,
-                  otherUserName: userData.name,
-                  otherUserImage: userData.image ?? null,
-                });
-              usersChatted[otherUserId] = true;
+          // if (!user.isOnline || !usersChatted[doc.id]) return;
+          if (!user.isOnline || !booked[doc.id]) return;
+
+          // usersChatted[doc.id] = true;
+          activeUsers.push({
+            name: user.name,
+            otherUserId: doc.id,
+            otherUserName: user.name,
+            otherUserImage: user.image ?? null,
+          });
+        });
+        console.log("setting of user");
+
+        // setMessengers(temp);
+        if (activeUsers.length > 0) setChatHeads(activeUsers);
+
+        if (unsubscribeMess) return;
+
+        const messageQuery = query(
+          collection(db, "messages"),
+          where("participants", "array-contains", userId),
+          orderBy("sentAt", "desc")
+        );
+
+        unsubscribeMess = onSnapshot(messageQuery, (snapshot) => {
+          let temp = [];
+          // console.log(users);
+          let checked = {};
+          // let temp1 = [];
+
+          try {
+            for (let i in snapshot.docs) {
+              const message = snapshot.docs[i].data();
+
+              const otherUserId =
+                message.participants[0] == userId
+                  ? message.participants[1]
+                  : message.participants[0];
+
+              if (checked[otherUserId] || !otherUserId || userId == otherUserId)
+                continue;
+
+              checked[otherUserId] = true;
+              const userData = users[otherUserId];
+
+              // if (!usersChatted[otherUserId]) {
+              //   if (userData.isOnline)
+              //     temp1.push({
+              //       name: userData.name,
+              //       otherUserId: otherUserId,
+              //       otherUserName: userData.name,
+              //       otherUserImage: userData.image ?? null,
+              //     });
+              //   usersChatted[otherUserId] = true;
+              // }
+
+              const isUserSender = message.senderId == userId;
+
+              temp.push({
+                sentAt: DateTimeConverter(message.sentAt),
+                lastMessage: message.message,
+                name: userData.name,
+                otherUserId: otherUserId,
+                otherUserName: userData.name,
+                otherUserImage: userData.image,
+                isOnline: userData.isOnline,
+                seenByUser: isUserSender || (!isUserSender && message.seen),
+                seenByOtherUser: isUserSender && message.seen,
+              });
             }
+            // if (temp1.length > 0) setChatHeads(temp1);
+            if (temp.length > 0) setMessengers(temp);
+          } catch (e) {
+            console.log(e, "error sa getting messages");
+          } finally {
+            console.log("snap message");
+            if (loaded) return;
 
-            const isUserSender = message.senderId == userId;
+            console.log("close loading message");
 
-            temp.push({
-              sentAt: DateTimeConverter(message.sentAt),
-              lastMessage: message.message,
-              name: userData.name,
-              otherUserId: otherUserId,
-              otherUserName: userData.name,
-              otherUserImage: userData.image,
-              isOnline: userData.isOnline,
-              seenByUser: isUserSender || (!isUserSender && message.seen),
-              seenByOtherUser: isUserSender && message.seen,
-            });
+            loaded = true;
+            setIsLoading(false);
           }
-          if (temp1.length > 0) setChatHeads(temp1);
-          if (temp.length > 0) setMessengers(temp);
-        } catch (e) {
-          console.log(e, "error sa getting messages");
-        } finally {
-          console.log("snap message");
-          if (loaded) return;
-
-          console.log("close loading message");
-
-          loaded = true;
-          setIsLoading(false);
-        }
+        });
       });
     });
 
     return () => {
       console.log("unsubs");
       loaded = false;
-      unsubscribeActive();
+      if (unsubscribeActive) unsubscribeActive();
       if (unsubscribeMess) unsubscribeMess();
     };
   };
@@ -428,3 +447,117 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 });
+
+// const unsubscribeActive = onSnapshot(messengerQuery, (snapshot) => {
+//   let activeUsers = [];
+//   // let temp = messengers;
+//   users = {};
+//   console.log("users snap messager");
+
+//   snapshot.docs.forEach((doc) => {
+//     if (doc.id == userId) return;
+
+//     const user = doc.data();
+
+//     users[doc.id] = {
+//       name: user.name,
+//       image: user.image ?? null,
+//       isOnline: user.isOnline ?? false,
+//     };
+//     // for (let i in temp) {
+//     //   let mess = temp[i];
+//     //   if (mess.otherUserId != doc.id) continue;
+
+//     //   temp[i] = {
+//     //     ...mess,
+//     //     otherUserName: user.name,
+//     //     otherUserImage: user.image,
+//     //     isOnline: user.isOnline,
+//     //   };
+//     //   break;
+//     // }
+
+//     if (!user.isOnline || !usersChatted[doc.id]) return;
+
+//     usersChatted[doc.id] = true;
+//     activeUsers.push({
+//       name: user.name,
+//       otherUserId: doc.id,
+//       otherUserName: user.name,
+//       otherUserImage: user.image ?? null,
+//     });
+//   });
+//   console.log("setting of user");
+
+//   // setMessengers(temp);
+//   if (activeUsers.length > 0) setChatHeads(activeUsers);
+
+//   if (unsubscribeMess) return;
+
+//   const messageQuery = query(
+//     collection(db, "messages"),
+//     where("participants", "array-contains", userId),
+//     orderBy("sentAt", "desc")
+//   );
+
+//   unsubscribeMess = onSnapshot(messageQuery, (snapshot) => {
+//     let temp = [];
+//     // console.log(users);
+//     let checked = {};
+//     let temp1 = [];
+
+//     try {
+//       for (let i in snapshot.docs) {
+//         const message = snapshot.docs[i].data();
+
+//         const otherUserId =
+//           message.participants[0] == userId
+//             ? message.participants[1]
+//             : message.participants[0];
+
+//         if (checked[otherUserId] || !otherUserId || userId == otherUserId)
+//           continue;
+
+//         checked[otherUserId] = true;
+//         const userData = users[otherUserId];
+
+//         if (!usersChatted[otherUserId]) {
+//           if (userData.isOnline)
+//             temp1.push({
+//               name: userData.name,
+//               otherUserId: otherUserId,
+//               otherUserName: userData.name,
+//               otherUserImage: userData.image ?? null,
+//             });
+//           usersChatted[otherUserId] = true;
+//         }
+
+//         const isUserSender = message.senderId == userId;
+
+//         temp.push({
+//           sentAt: DateTimeConverter(message.sentAt),
+//           lastMessage: message.message,
+//           name: userData.name,
+//           otherUserId: otherUserId,
+//           otherUserName: userData.name,
+//           otherUserImage: userData.image,
+//           isOnline: userData.isOnline,
+//           seenByUser: isUserSender || (!isUserSender && message.seen),
+//           seenByOtherUser: isUserSender && message.seen,
+//         });
+//       }
+//       if (temp1.length > 0) setChatHeads(temp1);
+//       if (temp.length > 0) setMessengers(temp);
+//     } catch (e) {
+//       console.log(e, "error sa getting messages");
+//     } finally {
+//       console.log("snap message");
+//       if (loaded) return;
+
+//       console.log("close loading message");
+
+//       loaded = true;
+//       setIsLoading(false);
+//     }
+//   });
+// });

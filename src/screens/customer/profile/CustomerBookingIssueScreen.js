@@ -13,17 +13,16 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
-const BookingHelpScreen = ({ navigation }) => {
+const CustomerBookingIssueScreen = ({ navigation }) => {
   const [bookingId, setBookingId] = useState('');
   const [issueType, setIssueType] = useState('');
   const [description, setDescription] = useState('');
 
   const issueTypes = [
-    'Booking Cancellation',
-    'Schedule Conflict',
-    'Payment Issue',
-    'Customer No-show',
-    'Technical Problem',
+    'Service Not Completed',
+    'Provider Did Not Show Up',
+    'Poor Service Quality',
+    'Wrong Service Provided',
     'Other',
   ];
 
@@ -35,8 +34,8 @@ const BookingHelpScreen = ({ navigation }) => {
 
     // Here you would typically send the report to your backend
     Alert.alert(
-      'Success',
-      'Your report has been submitted. Our support team will review it shortly.',
+      'Report Submitted',
+      'Thank you for reporting the issue. Our support team will review it and get back to you shortly.',
       [
         {
           text: 'OK',
@@ -70,14 +69,14 @@ const BookingHelpScreen = ({ navigation }) => {
             style={styles.input}
             value={bookingId}
             onChangeText={setBookingId}
-            placeholder="Enter booking ID"
+            placeholder="Enter your booking ID"
             placeholderTextColor="#999"
           />
         </View>
 
         {/* Issue Type Selection */}
         <View style={styles.inputSection}>
-          <Text style={styles.label}>Issue Type</Text>
+          <Text style={styles.label}>What's the issue?</Text>
           <View style={styles.issueTypesContainer}>
             {issueTypes.map((type) => (
               <TouchableOpacity
@@ -103,12 +102,12 @@ const BookingHelpScreen = ({ navigation }) => {
 
         {/* Description Input */}
         <View style={styles.inputSection}>
-          <Text style={styles.label}>Description</Text>
+          <Text style={styles.label}>Describe your issue</Text>
           <TextInput
             style={styles.descriptionInput}
             value={description}
             onChangeText={setDescription}
-            placeholder="Describe your issue in detail"
+            placeholder="Please provide details about the issue..."
             placeholderTextColor="#999"
             multiline
             numberOfLines={6}
@@ -244,7 +243,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 20,
     paddingHorizontal: 16,
+    marginBottom: 24,
   },
 });
 
-export default BookingHelpScreen;
+export default CustomerBookingIssueScreen;

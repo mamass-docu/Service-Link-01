@@ -276,7 +276,7 @@ const CustomerHomeScreen = ({ navigation }) => {
             <ProviderCard
               key={provider.id}
               provider={provider}
-              onPress={() => navigation.navigate("MoreServices", { provider })}
+              onPress={() => navigation.navigate("Shop", { providerId: provider.id })}
             />
           ))}
         </View>

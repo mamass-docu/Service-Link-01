@@ -16,6 +16,10 @@ import { useAppContext } from "../AppProvider";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Providers } from "./Providers";
 import { Customers } from "./Customers";
+import ChatSupportScreen from "../src/screens/All/ChatSupportScreen";
+import TermsConditionsScreen from "../src/screens/All/TermsConditionsScreen";
+import FAQScreen from "../src/screens/All/FAQScreen";
+import CustomerBookingIssueScreen from "../src/screens/customer/profile/CustomerBookingIssueScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +46,13 @@ export const All = () => {
       <Stack.Screen name="UserSearch" component={UserSearchResultsScreen} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+      <Stack.Screen name="ChatSupport" component={ChatSupportScreen} />
+      <Stack.Screen name="TermsConditions" component={TermsConditionsScreen} />
+      <Stack.Screen name="FAQ" component={FAQScreen} />
+      <Stack.Screen
+        name="BookingIssue"
+        component={CustomerBookingIssueScreen}
+      />
       <Stack.Screen
         name="JobStatus"
         component={JobStatusScreen}

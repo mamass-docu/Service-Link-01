@@ -1,7 +1,7 @@
 import TermsAndConditionsScreen from "../src/screens/provider/TermsAndConditionsScreen";
 import ProviderEditProfileScreen from "../src/screens/provider/profile/ProviderEditProfileScreen";
 import VerificationStatusScreen from "../src/screens/provider/profile/VerificationStatusScreen";
-import HelpSupportScreen from "../src/screens/provider/profile/HelpSupportScreen";
+// import HelpSupportScreen from "../src/screens/provider/profile/HelpSupportScreen";
 import MyAvailabilityScreen from "../src/screens/provider/profile/MyAvailabilityScreen";
 import ProviderSettings from "../src/screens/provider/profile/ProviderSettings";
 import BookingHelpScreen from "../src/screens/provider/profile/BookingHelpScreen";
@@ -11,6 +11,7 @@ import ViewShopScreen from "../src/screens/provider/home/ShopScreen";
 import MainDashboard from "../src/screens/provider/MainDashboard";
 import TransactionsScreen from "../src/screens/provider/profile/TransactionsScreen";
 import BusinessDocumentsScreen from "../src/screens/provider/ShopDocuments/BusinessDocumentsScreen";
+import ProviderHelpSupportScreen from "../src/screens/provider/profile/ProviderHelpAndSupportScreen";
 
 export const Providers = (Stack) => (
   <>
@@ -25,7 +26,7 @@ export const Providers = (Stack) => (
       name="VerificationStatus"
       component={VerificationStatusScreen}
     />
-    <Stack.Screen name="HelpAndSupport" component={HelpSupportScreen} />
+    <Stack.Screen name="HelpAndSupport" component={ProviderHelpSupportScreen} />
     <Stack.Screen name="MyAvailability" component={MyAvailabilityScreen} />
     <Stack.Screen name="Settings" component={ProviderSettings} />
     <Stack.Screen name="BookingHelpScreen" component={BookingHelpScreen} />

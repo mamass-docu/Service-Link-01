@@ -165,7 +165,7 @@ const HelpAndSupportScreen = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.linkItem}
-            onPress={() => navigation.navigate("TermsOfService")}
+            onPress={() => navigation.navigate("CustomerTerms")}
           >
             <Text style={styles.linkText}>Terms of Service</Text>
           </TouchableOpacity>
