@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useAppContext } from "../../../../AppProvider";
-import { find, loadingProcess, update } from "../../../databaseHelper";
+import { find, loadingProcess, update } from "../../../helpers/databaseHelper";
 
 const AddressModal = ({
   showAddModal,
@@ -87,10 +87,10 @@ const AddressModal = ({
       await update("users", userId, {
         addresses: updatedAddress,
       });
-      
+
       setAddresses(updatedAddress);
       resetFields();
-    })
+    });
   };
 
   function resetFields() {
@@ -264,17 +264,17 @@ export default function Addresses({ navigation }) {
   }
 
   const handleSetDefault = (index) => {
-    try{
-      console.log('afsksdfj');
-      
+    try {
+      console.log("afsksdfj");
+
       const data = addresses.map((addr, i) => ({
         ...addr,
         default: i === index,
       }));
       setAddresses(data);
-  
+
       updateAddress(data);
-    } catch(e){
+    } catch (e) {
       console.log(e, "error setting address default");
     }
   };

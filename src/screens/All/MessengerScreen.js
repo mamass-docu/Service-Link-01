@@ -1,5 +1,5 @@
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -9,33 +9,31 @@ import {
   SafeAreaView,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { db } from "../firebase";
+import { db } from "../../db/firebase";
 import {
   collection,
-  getDoc,
   onSnapshot,
   orderBy,
   query,
   where,
-  doc,
 } from "firebase/firestore";
-import { useAppContext } from "../../AppProvider";
-import ListScreen from "./ListScreen";
-import ProfileImageScreen from "./ProfileImage";
-import { setIsLoading } from "../databaseHelper";
-import { DateTimeConverter } from "../db/DateTimeConverter";
+import { useAppContext } from "../../../AppProvider";
+import ListScreen from "../components/ListScreen";
+import ProfileImageScreen from "../components/ProfileImage";
+import { setIsLoading } from "../../helpers/databaseHelper";
+import { DateTimeConverter } from "../../db/DateTimeConverter";
 
 export default function MessengerScreen({ navigation }) {
   const [chatHeads, setChatHeads] = useState([]);
   const [messengers, setMessengers] = useState([]);
-  const loaded = useRef(false);
 
   const { userId, userRole } = useAppContext();
 
   const callback = () => {
     setIsLoading(true);
-    loaded.current = false;
+    let loaded = false;
     let users = {};
+    let usersChatted = {};
     let unsubscribeMess = null;
 
     const messengerQuery =
@@ -72,8 +70,9 @@ export default function MessengerScreen({ navigation }) {
         //   break;
         // }
 
-        if (!user.isOnline) return;
+        if (!user.isOnline || !usersChatted[doc.id]) return;
 
+        usersChatted[doc.id] = true;
         activeUsers.push({
           name: user.name,
           otherUserId: doc.id,
@@ -84,7 +83,7 @@ export default function MessengerScreen({ navigation }) {
       console.log("setting of user");
 
       // setMessengers(temp);
-      setChatHeads(activeUsers);
+      if (activeUsers.length > 0) setChatHeads(activeUsers);
 
       if (unsubscribeMess) return;
 
@@ -96,8 +95,9 @@ export default function MessengerScreen({ navigation }) {
 
       unsubscribeMess = onSnapshot(messageQuery, (snapshot) => {
         let temp = [];
-        let checked = {};
         // console.log(users);
+        let checked = {};
+        let temp1 = [];
 
         try {
           for (let i in snapshot.docs) {
@@ -114,6 +114,19 @@ export default function MessengerScreen({ navigation }) {
             checked[otherUserId] = true;
             const userData = users[otherUserId];
 
+            if (!usersChatted[otherUserId]) {
+              if (userData.isOnline)
+                temp1.push({
+                  name: userData.name,
+                  otherUserId: otherUserId,
+                  otherUserName: userData.name,
+                  otherUserImage: userData.image ?? null,
+                });
+              usersChatted[otherUserId] = true;
+            }
+
+            const isUserSender = message.senderId == userId;
+
             temp.push({
               sentAt: DateTimeConverter(message.sentAt),
               lastMessage: message.message,
@@ -122,20 +135,21 @@ export default function MessengerScreen({ navigation }) {
               otherUserName: userData.name,
               otherUserImage: userData.image,
               isOnline: userData.isOnline,
-              seen: message.senderId == userId ? true : message.seen,
+              seenByUser: isUserSender || (!isUserSender && message.seen),
+              seenByOtherUser: isUserSender && message.seen,
             });
           }
-
-          setMessengers(temp);
+          if (temp1.length > 0) setChatHeads(temp1);
+          if (temp.length > 0) setMessengers(temp);
         } catch (e) {
           console.log(e, "error sa getting messages");
         } finally {
           console.log("snap message");
-          if (loaded.current) return;
+          if (loaded) return;
 
           console.log("close loading message");
 
-          loaded.current = true;
+          loaded = true;
           setIsLoading(false);
         }
       });
@@ -143,7 +157,7 @@ export default function MessengerScreen({ navigation }) {
 
     return () => {
       console.log("unsubs");
-      loaded.current = false;
+      loaded = false;
       unsubscribeActive();
       if (unsubscribeMess) unsubscribeMess();
     };
@@ -210,18 +224,18 @@ export default function MessengerScreen({ navigation }) {
           <Text
             style={{
               ...styles.chatItemService,
-              fontWeight: item.seen ? "400" : "800",
+              fontWeight: item.seenByUser ? "400" : "800",
             }}
           >
             {item.lastMessage}
           </Text>
           <Text style={styles.chatItemMessage}>{item.sentAt}</Text>
 
-          {!item.seen ? (
+          {!item.seenByUser ? (
             <View style={styles.notSeenIndicator} />
-          ) : (
+          ) : item.seenByOtherUser ? (
             <Text style={styles.seenText}>seen</Text>
-          )}
+          ) : null}
         </View>
       </View>
       <Text style={styles.chatItemTime}>{item.time}</Text>
@@ -350,10 +364,10 @@ const styles = StyleSheet.create({
     paddingRight: 5,
     paddingLeft: 5,
     paddingBottom: 2,
-    color:"#094512",
+    color: "#094512",
     borderRadius: 5,
     fontSize: 12,
-    backgroundColor: "#98f2a5"
+    backgroundColor: "#98f2a5",
   },
   chatHeadName: {
     fontSize: 13,

@@ -10,8 +10,8 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { get, loadingProcess, setNotifAsSeen, where } from "../databaseHelper";
-import { useAppContext } from "../../AppProvider";
+import { get, loadingProcess, where } from "../../helpers/databaseHelper";
+import { useAppContext } from "../../../AppProvider";
 
 const NotificationsScreen = ({ navigation }) => {
   const [notifications, setNotifications] = useState([]);
@@ -31,11 +31,6 @@ const NotificationsScreen = ({ navigation }) => {
       });
     }, [])
   );
-
-  const goTo = async (id, screen, params) => {
-    if (screen == "ProviderHome") await setNotifAsSeen(id);
-    navigation.navigate(screen, params);
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -63,7 +58,7 @@ const NotificationsScreen = ({ navigation }) => {
           {notifications.map((item) => (
             <TouchableOpacity
               key={item.id}
-              onPress={() => goTo(item.id, item.screen, item.params)}
+              onPress={() => navigation.navigate(item.screen, item.params)}
               style={{
                 marginRight: 20,
                 marginLeft: 20,

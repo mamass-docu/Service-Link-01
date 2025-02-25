@@ -16,8 +16,8 @@ import {
   StatusBar,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { app } from "../firebase";
-import { loadingProcess } from "../databaseHelper";
+import { app } from "../../db/firebase";
+import { loadingProcess } from "../../helpers/databaseHelper";
 
 const ChangePasswordScreen = ({ navigation }) => {
   const [currentPassword, setCurrentPassword] = useState("");

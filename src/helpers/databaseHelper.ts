@@ -12,14 +12,14 @@ import {
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
-import { db } from "./firebase";
-import store from "./state/store";
+import { db } from "../db/firebase";
+import store from "../state/store";
 import {
   openLoading,
   closeLoading,
   openSpecificLoading,
   closeSpecificLoading,
-} from "./state/loadingSlice";
+} from "../state/loadingSlice";
 import { useSelector } from "react-redux";
 
 const setIsLoading = (loading) => {
@@ -106,10 +106,6 @@ const addNotif = async (receiverId, title, body, screen, params) => {
   await addDoc(collection(db, "notifications"), data);
 };
 
-const setNotifAsSeen = (id) => {
-  updateDoc(doc(db, "notifications", id), { seen: true, prompt: true });
-};
-
 const setNotifPrompt = (id) => {
   updateDoc(doc(db, "notifications", id), { prompt: true });
 };
@@ -154,7 +150,6 @@ export {
   count,
   remove,
   addNotif,
-  setNotifAsSeen,
   where,
   serverTimestamp,
 };

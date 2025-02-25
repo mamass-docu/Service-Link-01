@@ -22,8 +22,8 @@ import {
   serverTimestamp,
   update,
   where,
-} from "../../../databaseHelper";
-import ProfileImageScreen from "../../../components/ProfileImage";
+} from "../../../helpers/databaseHelper";
+import ProfileImageScreen from "../../components/ProfileImage";
 import { DateTimeConverter } from "../../../db/DateTimeConverter";
 
 const JobRequestCard = ({ job, onAccept, onDecline }) => (
@@ -106,8 +106,8 @@ const HomeScreen = () => {
   );
 
   async function refresh() {
-    const c = await getNotifCount(userId)
-    setNotifCount(c)
+    const c = await getNotifCount(userId);
+    setNotifCount(c);
     const snapshot = await get(
       "bookings",
       where("providerId", "==", userId)
@@ -129,7 +129,7 @@ const HomeScreen = () => {
       const dd = snapshot.docs[i];
       let d = dd.data();
 
-      d.createdAt = DateTimeConverter(d.createdAt)
+      d.createdAt = DateTimeConverter(d.createdAt);
 
       if (d.status == "Declined") {
         continue;
@@ -243,7 +243,7 @@ const HomeScreen = () => {
             loadingProcess(async () => {
               await update("bookings", job.id, {
                 status: "Declined",
-              declinedAt: serverTimestamp(),
+                declinedAt: serverTimestamp(),
               });
               addNotif(
                 job.customerId,
@@ -287,7 +287,10 @@ const HomeScreen = () => {
             </View>
           </View>
           <View style={styles.notificationContainer}>
-            <TouchableOpacity onPress={() => navigation.navigate("Notifications")} style={styles.notificationButton}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Notifications")}
+              style={styles.notificationButton}
+            >
               <Icon name="bell" size={24} color="#FFF" />
             </TouchableOpacity>
             <View style={styles.requestBadge}>
@@ -335,7 +338,7 @@ const HomeScreen = () => {
       <View style={styles.actionButtons}>
         <TouchableOpacity
           style={styles.viewBookingsButton}
-          onPress={() => navigation.navigate("Bookings")}
+          onPress={() => navigation.navigate("BookingsTab")}
         >
           <Icon name="calendar-check" size={20} color="#FFF" />
           <Text style={styles.viewBookingsText}>View Bookings</Text>

@@ -20,10 +20,10 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { db } from "../firebase";
-import { useAppContext } from "../../AppProvider";
-import ListScreen from "./ListScreen";
-import ProfileImageScreen from "./ProfileImage";
+import { db } from "../../db/firebase";
+import { useAppContext } from "../../../AppProvider";
+import ListScreen from "../components/ListScreen";
+import ProfileImageScreen from "../components/ProfileImage";
 import {
   addNotif,
   get,
@@ -32,9 +32,9 @@ import {
   update,
   updateAllAsSeen,
   useSelector,
-} from "../databaseHelper";
-import { DateTimeConverter } from "../db/DateTimeConverter";
-import EmptyScreen from "./EmptyScreen";
+} from "../../helpers/databaseHelper";
+import { DateTimeConverter } from "../../db/DateTimeConverter";
+import EmptyScreen from "../components/EmptyScreen";
 
 const MessageScreen = ({ route, navigation }) => {
   const [messages, setMessages] = useState([]);
@@ -57,7 +57,7 @@ const MessageScreen = ({ route, navigation }) => {
     );
     snap.docs.forEach((doc) => {
       console.log(doc.id, doc.data().message, "updating as seen message");
-      
+
       update("messages", doc.id, { seen: true });
     });
   };
@@ -75,7 +75,7 @@ const MessageScreen = ({ route, navigation }) => {
     );
     const unsubscribe = onSnapshot(messageQuery, (snapshot) => {
       updateAllAsSeen(userId, "Message");
-      updateMessagesAsSeen()
+      updateMessagesAsSeen();
 
       let temp = [];
       snapshot.docs.forEach((dc) => {

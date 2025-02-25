@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import * as Notifications from "expo-notifications";
-import LoadingScreen from "./src/components/LoadingScreen";
+import LoadingScreen from "./src/screens/components/LoadingScreen";
 import { useNavigation, useNavigationState } from "@react-navigation/native";
 import { AppState } from "react-native";
-import { db } from "./src/firebase";
+import { db } from "./src/db/firebase";
 import {
   collection,
   onSnapshot,
@@ -11,7 +11,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { setNotifAsSeen, setNotifPrompt } from "./src/databaseHelper";
+import { setNotifPrompt } from "./src/helpers/databaseHelper";
 import { logout } from "./src/db/UpdateUser";
 // import * as Permissions from 'expo-permissions';
 
@@ -99,11 +99,6 @@ export const AppProvider = ({ children }) => {
 
   // }
 
-  const goTo = (notifId, screen, params) => {
-    // if (screen != "Message") setNotifAsSeen(notifId);
-    navigation.navigate(screen, params);
-  };
-
   useEffect(() => {
     if (!userId) {
       removeListeners();
@@ -124,7 +119,7 @@ export const AppProvider = ({ children }) => {
         if (!screen) return;
 
         if (appState === "active") {
-          goTo(data.notifId, screen, data.params);
+          navigation.navigate(screen, data.params);
           return;
         }
 
@@ -132,7 +127,7 @@ export const AppProvider = ({ children }) => {
 
         if (AppState.currentState !== "active") return;
 
-        goTo(data.notifId, screen, data.params);
+        navigation.navigate(screen, data.params);
       });
 
     const q = query(

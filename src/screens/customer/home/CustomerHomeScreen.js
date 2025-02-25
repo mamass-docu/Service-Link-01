@@ -1,4 +1,3 @@
-// src/screens/Customer/Dashboard/CustomerHomeScreen.js
 import React, { useCallback, useState } from "react";
 import {
   View,
@@ -15,47 +14,52 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { useAppContext } from "../../../../AppProvider";
-import ProfileImageScreen from "../../../components/ProfileImage";
-import { get, getNotifCount, loadingProcess, where } from "../../../databaseHelper";
+import ProfileImageScreen from "../../components/ProfileImage";
+import {
+  get,
+  getNotifCount,
+  loadingProcess,
+  where,
+} from "../../../helpers/databaseHelper";
 
 const { width } = Dimensions.get("window");
 
 // Service Card Component
 const ServiceCard = ({ id, title, imageUrl, onPress }) => (
   // <View key={id}>
-    <TouchableOpacity style={styles.serviceCard} onPress={onPress}>
-      <View style={styles.serviceIconContainer}>
-        <Image
-          source={{ uri: imageUrl }}
-          style={styles.serviceIcon}
-          resizeMode="cover"
-        />
-      </View>
-      <Text style={styles.serviceTitle}>{title}</Text>
-    </TouchableOpacity>
+  <TouchableOpacity style={styles.serviceCard} onPress={onPress}>
+    <View style={styles.serviceIconContainer}>
+      <Image
+        source={{ uri: imageUrl }}
+        style={styles.serviceIcon}
+        resizeMode="cover"
+      />
+    </View>
+    <Text style={styles.serviceTitle}>{title}</Text>
+  </TouchableOpacity>
   // </View>
 );
 
 // Provider Card Component
 const ProviderCard = ({ provider, onPress }) => (
   // <View key={provider.id}>
-    <TouchableOpacity style={styles.providerCard} onPress={onPress}>
-      <ProfileImageScreen
-        image={provider.image}
-        name={provider.name}
-        style={styles.providerImage}
-        resizeMode="cover"
-      />
-      <View style={styles.providerInfo}>
-        <Text style={styles.providerName}>{provider.name}</Text>
-        <Text style={styles.providerService}>{provider.description}</Text>
-        <View style={styles.ratingContainer}>
-          <Feather name="star" size={14} color="#FFB800" />
-          <Text style={styles.ratingText}>4.0</Text>
-          <Text style={styles.reviewCount}>(100 reviews)</Text>
-        </View>
+  <TouchableOpacity style={styles.providerCard} onPress={onPress}>
+    <ProfileImageScreen
+      image={provider.image}
+      name={provider.name}
+      style={styles.providerImage}
+      resizeMode="cover"
+    />
+    <View style={styles.providerInfo}>
+      <Text style={styles.providerName}>{provider.name}</Text>
+      <Text style={styles.providerService}>{provider.description}</Text>
+      <View style={styles.ratingContainer}>
+        <Feather name="star" size={14} color="#FFB800" />
+        <Text style={styles.ratingText}>4.0</Text>
+        <Text style={styles.reviewCount}>(100 reviews)</Text>
       </View>
-    </TouchableOpacity>
+    </View>
+  </TouchableOpacity>
   // </View>
 );
 
@@ -148,8 +152,8 @@ const CustomerHomeScreen = ({ navigation }) => {
             };
           })
         );
-        const count = await getNotifCount(userId)
-        setHasNotif(count > 0)
+        const count = await getNotifCount(userId);
+        setHasNotif(count > 0);
       });
     }, [])
   );
@@ -190,7 +194,7 @@ const CustomerHomeScreen = ({ navigation }) => {
         {/* Search Bar Container */}
         <TouchableOpacity
           style={styles.searchBarContainer}
-          onPress={() => navigation.navigate("SearchResults")}
+          onPress={() => navigation.navigate("ServicesSearchResults")}
         >
           <View style={styles.searchBar}>
             <Feather name="search" size={20} color="#666" />
@@ -213,7 +217,7 @@ const CustomerHomeScreen = ({ navigation }) => {
                 title={service.title}
                 imageUrl={service.imageUrl}
                 onPress={() =>
-                  navigation.navigate("CustomerProviderOption", {
+                  navigation.navigate("ProviderOption", {
                     service: service.title,
                   })
                 }
@@ -222,7 +226,7 @@ const CustomerHomeScreen = ({ navigation }) => {
             <ServiceCard
               title="More"
               imageUrl="https://img.icons8.com/color/96/more.png"
-              onPress={() => navigation.navigate("CustomerMoreServices")}
+              onPress={() => navigation.navigate("MoreServices")}
             />
           </View>
         </View>
@@ -270,7 +274,7 @@ const CustomerHomeScreen = ({ navigation }) => {
           </View>
           {providers.map((provider) => (
             <ProviderCard
-            key={provider.id}
+              key={provider.id}
               provider={provider}
               onPress={() => navigation.navigate("MoreServices", { provider })}
             />

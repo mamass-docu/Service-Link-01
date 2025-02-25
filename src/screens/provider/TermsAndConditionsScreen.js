@@ -12,19 +12,19 @@ import {
   Alert,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { db } from "../../firebase";
+import { db } from "../../db/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { useAppContext } from "../../../AppProvider";
 import {
   update,
   specificLoadingProcess,
   useSelector,
-} from "../../databaseHelper";
+} from "../../helpers/databaseHelper";
 
 const TermsAndConditionsScreen = ({ navigation }) => {
   const [isAccepted, setIsAccepted] = useState(false);
   const { userId } = useAppContext();
-  const isLoading = useSelector(state => state.loading.specific)
+  const isLoading = useSelector((state) => state.loading.specific);
 
   const handleAcceptTerms = () => {
     if (!isAccepted) return;
@@ -37,7 +37,7 @@ const TermsAndConditionsScreen = ({ navigation }) => {
 
         navigation.reset({
           index: 0,
-          routes: [{ name: "ProviderHome" }],
+          routes: [{ name: "Main" }],
         });
       },
       (error) => {

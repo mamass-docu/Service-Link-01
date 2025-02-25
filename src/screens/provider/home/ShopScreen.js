@@ -22,11 +22,11 @@ import {
   remove,
   update,
   where,
-} from "../../../databaseHelper";
-import { selectImage } from "../../../ImageSelector";
+} from "../../../helpers/databaseHelper";
+import { selectImage } from "../../../helpers/ImageSelector";
 import { updateProviderUserImage } from "../../../db/UpdateUser";
-import { uploadImage } from "../../../cloudinary";
-import ProfileImageScreen from "../../../components/ProfileImage";
+import { uploadImage } from "../../../helpers/cloudinary";
+import ProfileImageScreen from "../../components/ProfileImage";
 
 const ViewShopScreen = ({ navigation }) => {
   const { userId, userName, userImage, userEmail, setUserImage } =
@@ -167,7 +167,7 @@ const ViewShopScreen = ({ navigation }) => {
         providerId: userId,
         providerName: userName,
       };
-      if (userImage) serviceToAdd.image = userImage
+      if (userImage) serviceToAdd.image = userImage;
 
       await add("providerServices", serviceToAdd);
 
@@ -245,13 +245,13 @@ const ViewShopScreen = ({ navigation }) => {
     );
   };
 
-  const onAddServiceClick = () =>{
-    if (!shopInfo?.service){
-      alert("You need to add shop or service first in your profile!!!")
-      return
+  const onAddServiceClick = () => {
+    if (!shopInfo?.service) {
+      alert("You need to add shop or service first in your profile!!!");
+      return;
     }
-    setShowAddService(true)
-  } 
+    setShowAddService(true);
+  };
 
   // Review Card Component
   const ReviewCard = ({ review }) => (

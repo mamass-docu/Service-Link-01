@@ -1,7 +1,7 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { doc, getDoc } from "firebase/firestore";
 import { useCallback, useState } from "react";
-import { db } from "../firebase";
+import { db } from "./firebase";
 import store from "../state/store";
 import { closeLoading, openLoading } from "../state/loadingSlice";
 

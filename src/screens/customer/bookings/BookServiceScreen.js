@@ -25,8 +25,8 @@ import {
   serverTimestamp,
   specificLoadingProcess,
   useSelector,
-} from "../../../databaseHelper";
-import ProfileImageScreen from "../../../components/ProfileImage";
+} from "../../../helpers/databaseHelper";
+import ProfileImageScreen from "../../components/ProfileImage";
 
 const BookServiceScreen = ({ route, navigation }) => {
   const { provider } = route.params;
@@ -65,8 +65,8 @@ const BookServiceScreen = ({ route, navigation }) => {
     });
 
     return () => {
-      setShowSuccessModal(false)
-    }
+      setShowSuccessModal(false);
+    };
   }, []);
 
   const onDateChange = (event, selectedDate) => {
@@ -88,7 +88,7 @@ const BookServiceScreen = ({ route, navigation }) => {
   };
 
   const handleBooking = () => {
-    if (loading) return
+    if (loading) return;
 
     if (!location.trim()) {
       Alert.alert("Error", "Please enter your location");
@@ -131,7 +131,7 @@ const BookServiceScreen = ({ route, navigation }) => {
           provider.providerId,
           `Bookings from ${userName}`,
           `${provider.service}/${provider.task} at ${location}`,
-          "ProviderHome"
+          "BookingsTab"
         );
 
         setBookingId(docRef.id);
@@ -303,7 +303,7 @@ const BookServiceScreen = ({ route, navigation }) => {
           <TouchableOpacity
             style={styles.paymentSelector}
             onPress={() =>
-              navigation.navigate("PaymentOptionsScreen", {
+              navigation.navigate("PaymentOptions", {
                 setPaymentMethod: setPaymentMethod,
                 setReferenceNo: setReferenceNumber,
                 price: provider.discountedPrice,
@@ -472,7 +472,7 @@ const BookServiceScreen = ({ route, navigation }) => {
                 style={styles.viewBookingButton}
                 onPress={() => {
                   setShowSuccessModal(false);
-                  navigation.replace("JobStatus", {bookingId: bookingId});
+                  navigation.replace("JobStatus", { bookingId: bookingId });
                 }}
               >
                 <Text style={styles.viewBookingText}>View Booking</Text>
@@ -482,7 +482,7 @@ const BookServiceScreen = ({ route, navigation }) => {
                 style={styles.doneButton}
                 onPress={() => {
                   setShowSuccessModal(false);
-                  navigation.navigate("CustomerHome");
+                  navigation.navigate("Main");
                 }}
               >
                 <Text style={styles.doneButtonText}>Done</Text>

@@ -16,7 +16,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { useAppContext } from "../../../../AppProvider";
 import { useFocusEffect } from "@react-navigation/native";
-import { find, loadingProcess, update } from "../../../databaseHelper";
+import { find, loadingProcess, update } from "../../../helpers/databaseHelper";
 import { updateProviderUserName } from "../../../db/UpdateUser";
 
 export default function ProviderEditProfileScreen({ navigation }) {

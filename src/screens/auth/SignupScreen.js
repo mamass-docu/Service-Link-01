@@ -16,8 +16,13 @@ import {
 } from "react-native";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-import { app } from "../../firebase";
-import { serverTimestamp, set, specificLoadingProcess, useSelector } from "../../databaseHelper";
+import { app } from "../../db/firebase";
+import {
+  serverTimestamp,
+  set,
+  specificLoadingProcess,
+  useSelector,
+} from "../../helpers/databaseHelper";
 
 export default function SignupScreen({ navigation, route }) {
   const auth = getAuth(app);
@@ -25,7 +30,7 @@ export default function SignupScreen({ navigation, route }) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { role } = route.params;
 
-  const isLoading = useSelector(state => state.loading.specific)
+  const isLoading = useSelector((state) => state.loading.specific);
 
   const [name, setName] = useState(null);
   const [email, setEmail] = useState(null);
@@ -78,56 +83,60 @@ export default function SignupScreen({ navigation, route }) {
       return;
     }
 
-    specificLoadingProcess(async()=>{
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+    specificLoadingProcess(
+      async () => {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
 
-      await set("users", userCredential.user.uid, {
-        name: name,
-        email: email,
-        phoneNumber: phoneNumber,
-        createdAt: serverTimestamp(),
-        role: role,
-        active: true,
-      });
+        await set("users", userCredential.user.uid, {
+          name: name,
+          email: email,
+          phoneNumber: phoneNumber,
+          createdAt: serverTimestamp(),
+          role: role,
+          active: true,
+        });
 
-      Alert.alert("Success", "Account created successfully!", [
-        {
-          text: "OK",
-          onPress: () =>
-            navigation.reset({
-              index: 0,
-              routes: [{ name: "Login" }],
-            }),
-        },
-      ]);
-    }, (error) => {
-      console.error("Signup error:", error);
+        Alert.alert("Success", "Account created successfully!", [
+          {
+            text: "OK",
+            onPress: () =>
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "Login" }],
+              }),
+          },
+        ]);
+      },
+      (error) => {
+        console.error("Signup error:", error);
 
-      let errorMessage = "An error occurred during signup";
+        let errorMessage = "An error occurred during signup";
 
-      switch (error.code) {
-        case "auth/email-already-in-use":
-          errorMessage = "This email is already registered";
-          break;
-        case "auth/invalid-email":
-          errorMessage = "Invalid email address";
-          break;
-        case "auth/weak-password":
-          errorMessage = "Password should be at least 6 characters";
-          break;
-        case "auth/network-request-failed":
-          errorMessage = "Network error. Please check your internet connection";
-          break;
-        default:
-          errorMessage = error.message;
+        switch (error.code) {
+          case "auth/email-already-in-use":
+            errorMessage = "This email is already registered";
+            break;
+          case "auth/invalid-email":
+            errorMessage = "Invalid email address";
+            break;
+          case "auth/weak-password":
+            errorMessage = "Password should be at least 6 characters";
+            break;
+          case "auth/network-request-failed":
+            errorMessage =
+              "Network error. Please check your internet connection";
+            break;
+          default:
+            errorMessage = error.message;
+        }
+
+        Alert.alert("Error", errorMessage);
       }
-
-      Alert.alert("Error", errorMessage);
-    } )
+    );
   };
 
   return (

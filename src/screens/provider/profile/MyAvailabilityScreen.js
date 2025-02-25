@@ -17,7 +17,7 @@ import { useAppContext } from "../../../../AppProvider";
 import { useFocusEffect } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import moment from "moment";
-import { find, set, loadingProcess } from "../../../databaseHelper";
+import { find, set, loadingProcess } from "../../../helpers/databaseHelper";
 
 const DateTimeModal = ({ visible, onClose, onSave, initialSchedule }) => {
   const [selectedDate, setSelectedDate] = useState(
@@ -308,7 +308,7 @@ const MyAvailabilityScreen = ({ navigation }) => {
       }
     );
 
-  const handleRemoveSchedule = (scheduleToRemove) => 
+  const handleRemoveSchedule = (scheduleToRemove) =>
     Alert.alert(
       "Remove Schedule",
       "Are you sure you want to remove this schedule?",

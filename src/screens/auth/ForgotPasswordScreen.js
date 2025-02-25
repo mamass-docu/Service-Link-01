@@ -14,19 +14,19 @@ import {
   StyleSheet,
 } from "react-native";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
-import { app } from "../../firebase";
+import { app } from "../../db/firebase";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import {
   get,
   where,
   specificLoadingProcess,
   useSelector,
-} from "../../databaseHelper";
+} from "../../helpers/databaseHelper";
 
 export default function ForgotPassword({ navigation }) {
   const auth = getAuth(app);
   const [email, setEmail] = useState("");
-  const isLoading = useSelector(state.loading.specific)
+  const isLoading = useSelector((state) => state.loading.specific);
 
   const validateEmail = async (email) => {
     try {

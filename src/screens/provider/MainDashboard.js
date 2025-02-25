@@ -3,7 +3,7 @@ import { Feather } from "@expo/vector-icons";
 import HomeScreen from "./home/HomeScreen";
 import BookingsScreen from "./bookings/BookingsScreen";
 import ProfileScreen from "./profile/ProfileScreen";
-import MessengerScreen from "../../components/MessengerScreen";
+import MessengerScreen from "../All/MessengerScreen";
 
 const Tab = createBottomTabNavigator();
 

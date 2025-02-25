@@ -13,11 +13,11 @@ import {
   Image,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { selectImage } from "../../../ImageSelector";
+import { selectImage } from "../../../helpers/ImageSelector";
 import { useFocusEffect } from "@react-navigation/native";
-import { find, loadingProcess, set } from "../../../databaseHelper";
+import { find, loadingProcess, set } from "../../../helpers/databaseHelper";
 import { useAppContext } from "../../../../AppProvider";
-import { uploadImage } from "../../../cloudinary";
+import { uploadImage } from "../../../helpers/cloudinary";
 
 const BusinessDocumentsScreen = ({ navigation }) => {
   // const [businessPermitImage, setBusinessPermitImage] = useState(null);

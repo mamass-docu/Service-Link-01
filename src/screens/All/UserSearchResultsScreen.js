@@ -11,11 +11,11 @@ import {
   Platform,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import EmptyScreen from "./EmptyScreen";
-import { all, loadingProcess } from "../databaseHelper";
-import { useAppContext } from "../../AppProvider";
+import EmptyScreen from "../components/EmptyScreen";
+import { all, loadingProcess } from "../../helpers/databaseHelper";
+import { useAppContext } from "../../../AppProvider";
 import { useFocusEffect } from "@react-navigation/native";
-import ProfileImageScreen from "./ProfileImage";
+import ProfileImageScreen from "../components/ProfileImage";
 
 const UserSearchResultsScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,9 +43,9 @@ const UserSearchResultsScreen = ({ navigation }) => {
       });
 
       return () => {
-        setSearchQuery("")
+        setSearchQuery("");
         // setSearchResults(users)
-      }
+      };
     }, [])
   );
 

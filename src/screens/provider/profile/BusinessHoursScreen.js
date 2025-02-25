@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { find, loadingProcess, set } from "../../../databaseHelper";
+import { find, loadingProcess, set } from "../../../helpers/databaseHelper";
 import { useAppContext } from "../../../../AppProvider";
 import { useFocusEffect } from "@react-navigation/native";
 

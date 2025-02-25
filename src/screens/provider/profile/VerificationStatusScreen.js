@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,24 +11,20 @@ import {
   Platform,
   Modal,
   Dimensions,
-} from 'react-native';
-import { Feather } from '@expo/vector-icons';
+} from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { useAppContext } from "../../../../AppProvider";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../../firebase";
-import LottieView from 'lottie-react-native';
+import { db } from "../../../db/firebase";
+import LottieView from "lottie-react-native";
 
 const SuccessAnimation = ({ visible, onClose }) => {
   return (
-    <Modal
-      transparent
-      visible={visible}
-      animationType="fade"
-    >
+    <Modal transparent visible={visible} animationType="fade">
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <LottieView
-            source={require('../../../../assets/animations/animation.json')}
+            source={require("../../../../assets/animations/animation.json")}
             autoPlay
             loop={false}
             style={styles.animation}
@@ -37,8 +33,8 @@ const SuccessAnimation = ({ visible, onClose }) => {
           />
           <Text style={styles.modalTitle}>Submitted Successfully!</Text>
           <Text style={styles.modalMessage}>
-            Your business application has been submitted for review.
-            We will notify you once the verification is complete.
+            Your business application has been submitted for review. We will
+            notify you once the verification is complete.
           </Text>
         </View>
       </View>
@@ -49,23 +45,23 @@ const SuccessAnimation = ({ visible, onClose }) => {
 const StepCard = ({ step, onPress, isLast }) => {
   const getStatusColor = () => {
     switch (step.status) {
-      case 'completed':
-        return '#4CAF50';
-      case 'current':
-        return '#FFB800';
+      case "completed":
+        return "#4CAF50";
+      case "current":
+        return "#FFB800";
       default:
-        return '#E0E0E0';
+        return "#E0E0E0";
     }
   };
 
   const getStatusIcon = () => {
     switch (step.status) {
-      case 'completed':
-        return 'check-circle';
-      case 'current':
+      case "completed":
+        return "check-circle";
+      case "current":
         return step.icon;
       default:
-        return 'lock';
+        return "lock";
     }
   };
 
@@ -79,15 +75,15 @@ const StepCard = ({ step, onPress, isLast }) => {
           <Text style={styles.stepNumber}>Step {step.step}</Text>
           <Text style={styles.stepTitle}>{step.title}</Text>
         </View>
-        {(step.status === 'completed' || step.status === 'current') && (
-          <TouchableOpacity 
+        {(step.status === "completed" || step.status === "current") && (
+          <TouchableOpacity
             style={styles.stepAction}
             onPress={() => onPress(step)}
           >
-            <Feather 
-              name={step.status === 'completed' ? 'edit-2' : 'arrow-right'} 
-              size={20} 
-              color="#FFB800" 
+            <Feather
+              name={step.status === "completed" ? "edit-2" : "arrow-right"}
+              size={20}
+              color="#FFB800"
             />
           </TouchableOpacity>
         )}
@@ -108,81 +104,81 @@ const VerificationStatusScreen = ({ navigation, route }) => {
     serviceAdded: true,
     documentsUploaded: true,
     availabilitySet: true,
-    adminApproval: false
+    adminApproval: false,
   });
 
   const steps = [
     {
       step: 1,
-      title: 'Business Profile Registration',
-      description: 'Basic business information setup',
-      status: 'completed',
-      icon: 'check-circle',
+      title: "Business Profile Registration",
+      description: "Basic business information setup",
+      status: "completed",
+      icon: "check-circle",
     },
     {
       step: 2,
-      title: 'Add Business Services',
-      description: 'Select the services your business provides.',
-      status: 'completed',
-      icon: 'plus-circle',
+      title: "Add Business Services",
+      description: "Select the services your business provides.",
+      status: "completed",
+      icon: "plus-circle",
     },
     {
       step: 3,
-      title: 'Business Documents',
-      description: 'Upload all required business documents and permits.',
-      status: 'completed',
-      icon: 'upload',
+      title: "Business Documents",
+      description: "Upload all required business documents and permits.",
+      status: "completed",
+      icon: "upload",
     },
     {
       step: 4,
-      title: 'Business Hours',
-      description: 'Set your business operating hours and availability.',
-      status: 'completed',
-      icon: 'clock',
+      title: "Business Hours",
+      description: "Set your business operating hours and availability.",
+      status: "completed",
+      icon: "clock",
     },
     {
       step: 5,
-      title: 'Business Verification',
-      description: 'Final review and verification of your business details.',
-      status: 'current',
-      icon: 'shield',
+      title: "Business Verification",
+      description: "Final review and verification of your business details.",
+      status: "current",
+      icon: "shield",
     },
   ];
 
   useEffect(() => {
     if (route.params?.fromAddServices) {
-      setVerificationStatus(prev => ({
+      setVerificationStatus((prev) => ({
         ...prev,
         serviceAdded: true,
         documentsUploaded: true,
-        currentStep: 4
+        currentStep: 4,
       }));
     }
   }, [route.params]);
 
   const handleStepPress = (step) => {
-    if (step.status === 'completed') {
+    if (step.status === "completed") {
       switch (step.step) {
         case 1:
-          navigation.navigate('BusinessProfile', { isEditing: false });
+          navigation.navigate("BusinessProfile", { isEditing: false });
           break;
         case 2:
-          navigation.navigate('AddServices', { isEditing: true });
+          navigation.navigate("AddServices", { isEditing: true });
           break;
         case 3:
-          navigation.navigate('BusinessDocuments', { isEditing: true });
+          navigation.navigate("BusinessDocuments", { isEditing: true });
           break;
         case 4:
-          navigation.navigate('BusinessHours', { isEditing: true });
+          navigation.navigate("BusinessHours", { isEditing: true });
           break;
         default:
           break;
       }
-    } else if (step.status === 'current' && step.step === 5) {
+    } else if (step.status === "current" && step.step === 5) {
       Alert.alert(
-        'Under Review',
-        'Your business application is currently under review. Our team will verify your documents and contact you soon.',
-        [{ text: 'OK' }]
+        "Under Review",
+        "Your business application is currently under review. Our team will verify your documents and contact you soon.",
+        [{ text: "OK" }]
       );
     }
   };
@@ -191,12 +187,12 @@ const VerificationStatusScreen = ({ navigation, route }) => {
     if (isSubmitted) return;
     setShowSuccess(true);
     setIsSubmitted(true);
-    
+
     setTimeout(() => {
       setShowSuccess(false);
       navigation.reset({
         index: 0,
-        routes: [{ name: 'ProviderHome' }],
+        routes: [{ name: "Main" }],
       });
     }, 5000);
   };
@@ -204,8 +200,8 @@ const VerificationStatusScreen = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-      
-      <SuccessAnimation 
+
+      <SuccessAnimation
         visible={showSuccess}
         onClose={() => setShowSuccess(false)}
       />
@@ -225,12 +221,7 @@ const VerificationStatusScreen = ({ navigation, route }) => {
       {/* Progress Bar */}
       <View style={styles.progressContainer}>
         <View style={styles.progressBar}>
-          <View 
-            style={[
-              styles.progressFill, 
-              { width: '100%' }
-            ]} 
-          />
+          <View style={[styles.progressFill, { width: "100%" }]} />
         </View>
         <Text style={styles.progressText}>100% Complete</Text>
       </View>
@@ -251,15 +242,12 @@ const VerificationStatusScreen = ({ navigation, route }) => {
 
       {/* Submit Button */}
       <TouchableOpacity
-        style={[
-          styles.checkStatusButton,
-          isSubmitted && styles.disabledButton
-        ]}
+        style={[styles.checkStatusButton, isSubmitted && styles.disabledButton]}
         onPress={handleCheckStatus}
         disabled={isSubmitted}
       >
         <Text style={styles.checkStatusButtonText}>
-          {isSubmitted ? 'SUBMITTED' : 'SUBMIT'}
+          {isSubmitted ? "SUBMITTED" : "SUBMIT"}
         </Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -269,34 +257,34 @@ const VerificationStatusScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F7FA',
+    backgroundColor: "#F5F7FA",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 16,
-    backgroundColor: '#FFFFFF',
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 16 : 16,
+    backgroundColor: "#FFFFFF",
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 16 : 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E8ECF2',
+    borderBottomColor: "#E8ECF2",
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 20,
-    width: Dimensions.get('window').width - 80,
-    alignItems: 'center',
+    width: Dimensions.get("window").width - 80,
+    alignItems: "center",
   },
   animation: {
     width: 100,
@@ -305,58 +293,58 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: '700',
-    color: '#333333',
+    fontWeight: "700",
+    color: "#333333",
     marginBottom: 8,
-    textAlign: 'center',
+    textAlign: "center",
   },
   modalMessage: {
     fontSize: 14,
-    color: '#666666',
-    textAlign: 'center',
+    color: "#666666",
+    textAlign: "center",
     lineHeight: 20,
     paddingHorizontal: 10,
   },
   backButton: {
     width: 40,
     height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 8,
   },
   headerTitle: {
     flex: 1,
     fontSize: 20,
-    fontWeight: '700',
-    color: '#1A1A1A',
-    textAlign: 'center',
+    fontWeight: "700",
+    color: "#1A1A1A",
+    textAlign: "center",
     marginRight: 40,
   },
   headerRight: {
     width: 40,
   },
   progressContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E8ECF2',
+    borderBottomColor: "#E8ECF2",
   },
   progressBar: {
     height: 8,
-    backgroundColor: '#E8ECF2',
+    backgroundColor: "#E8ECF2",
     borderRadius: 4,
     marginBottom: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   progressFill: {
-    height: '100%',
-    backgroundColor: '#4CAF50',
+    height: "100%",
+    backgroundColor: "#4CAF50",
     borderRadius: 4,
   },
   progressText: {
     fontSize: 14,
-    color: '#666666',
-    textAlign: 'right',
+    color: "#666666",
+    textAlign: "right",
   },
   content: {
     flex: 1,
@@ -365,12 +353,12 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   stepCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
@@ -379,15 +367,15 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   stepHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   stepBadge: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 12,
   },
   stepInfo: {
@@ -395,49 +383,49 @@ const styles = StyleSheet.create({
   },
   stepNumber: {
     fontSize: 12,
-    color: '#666666',
+    color: "#666666",
     marginBottom: 4,
   },
   stepTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#333333',
+    fontWeight: "600",
+    color: "#333333",
   },
   stepAction: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#FFF9E6',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#FFF9E6",
+    justifyContent: "center",
+    alignItems: "center",
   },
   stepDescription: {
     fontSize: 14,
-    color: '#666666',
+    color: "#666666",
     marginTop: 12,
     lineHeight: 20,
   },
   checkStatusButton: {
-    backgroundColor: '#FFB800',
+    backgroundColor: "#FFB800",
     margin: 16,
     padding: 16,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
     elevation: 4,
-    shadowColor: '#FFB800',
+    shadowColor: "#FFB800",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
   },
   disabledButton: {
-    backgroundColor: '#CCCCCC',
+    backgroundColor: "#CCCCCC",
     elevation: 0,
     shadowOpacity: 0,
   },
   checkStatusButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
   },
 });
 

@@ -16,7 +16,7 @@ import {
   Dimensions,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { app } from "../../firebase";
+import { app } from "../../db/firebase";
 import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
 import { useAppContext } from "../../../AppProvider";
 import {
@@ -25,21 +25,21 @@ import {
   serverTimestamp,
   specificLoadingProcess,
   useSelector,
-} from "../../databaseHelper";
+} from "../../helpers/databaseHelper";
 const { width, height } = Dimensions.get("window");
 
 export default function LoginScreen({ navigation }) {
   const [showPassword, setShowPassword] = useState(false);
   // const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    email: "customer@customer.com",
+    email: "provider@provider.com",
     password: "password",
   });
 
   const { setUserId, setUserName, setUserRole, setUserEmail, setUserImage } =
     useAppContext();
 
-  const isLoading = useSelector(state => state.loading.specific)
+  const isLoading = useSelector((state) => state.loading.specific);
 
   const auth = getAuth(app);
 
@@ -53,93 +53,90 @@ export default function LoginScreen({ navigation }) {
   // });
 
   const handleLogin = async () => {
-    if (isLoading) return
+    if (isLoading) return;
 
     if (!formData.email || !formData.password) {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
 
-    specificLoadingProcess(async ()=>{
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
-      );
+    specificLoadingProcess(
+      async () => {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          formData.email,
+          formData.password
+        );
 
-      const userDoc = await find("users", userCredential.user.uid);
+        const userDoc = await find("users", userCredential.user.uid);
 
-      if (!userDoc.exists()) {
-        await auth.signOut();
-        Alert.alert("Error", "Account not found!!!");
-        return;
-      }
+        if (!userDoc.exists()) {
+          await auth.signOut();
+          Alert.alert("Error", "Account not found!!!");
+          return;
+        }
 
-      const userData = userDoc.data();
+        const userData = userDoc.data();
 
-      // Verify user type
-      if (userData.role == "Admin") {
-        await auth.signOut();
-        Alert.alert("Error", "Invalid account type!!!");
-        return;
-      }
+        // Verify user type
+        if (userData.role == "Admin") {
+          await auth.signOut();
+          Alert.alert("Error", "Invalid account type!!!");
+          return;
+        }
 
-      // Check account status
-      if (!userData.active) {
-        await auth.signOut();
-        Alert.alert("Error", "Account is not active!!!");
-        return;
-      }
+        // Check account status
+        if (!userData.active) {
+          await auth.signOut();
+          Alert.alert("Error", "Account is not active!!!");
+          return;
+        }
 
-      setUserId(userCredential.user.uid);
-      setUserName(userData.name);
-      setUserEmail(userData.email);
-      setUserRole(userData.role);
-      setUserImage(userData.image);
+        setUserId(userCredential.user.uid);
+        setUserName(userData.name);
+        setUserEmail(userData.email);
+        setUserRole(userData.role);
+        setUserImage(userData.image);
 
-      await update(
-        "users",
-        userCredential.user.uid,
-        {
+        await update("users", userCredential.user.uid, {
           isOnline: true,
           lastSeen: serverTimestamp(),
+        });
+
+        navigation.reset({
+          index: 0,
+          routes: [
+            {
+              name: userData.hasAcceptedTerms ? "Main" : "TermsAndConditions",
+            },
+          ],
+        });
+      },
+      (error) => {
+        console.error("Login error:", error);
+
+        let errorMessage = "An error occurred during login";
+
+        switch (error.code) {
+          case "auth/invalid-email":
+            errorMessage = "Invalid email address";
+            break;
+          case "auth/user-not-found":
+            errorMessage = "No account found with this email";
+            break;
+          case "auth/wrong-password":
+            errorMessage = "Incorrect password";
+            break;
+          case "auth/too-many-requests":
+            errorMessage = "Too many failed attempts. Please try again later";
+            break;
+          default:
+            errorMessage = error.message;
         }
-      );
 
-      navigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: userData.hasAcceptedTerms
-              ? `${userData.role}Home`
-              : `${userData.role}TermsAndConditions`,
-          },
-        ],
-      });
-    }, (error)=>{
-      console.error("Login error:", error);
-
-      let errorMessage = "An error occurred during login";
-
-      switch (error.code) {
-        case "auth/invalid-email":
-          errorMessage = "Invalid email address";
-          break;
-        case "auth/user-not-found":
-          errorMessage = "No account found with this email";
-          break;
-        case "auth/wrong-password":
-          errorMessage = "Incorrect password";
-          break;
-        case "auth/too-many-requests":
-          errorMessage = "Too many failed attempts. Please try again later";
-          break;
-        default:
-          errorMessage = error.message;
+        Alert.alert("Error", errorMessage);
       }
-
-      Alert.alert("Error", errorMessage);
-    })
+    );
   };
 
   return (

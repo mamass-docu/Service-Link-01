@@ -16,11 +16,11 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { useAppContext } from "../../../../AppProvider";
 import { useFocusEffect } from "@react-navigation/native";
-import { find, loadingProcess, update } from "../../../databaseHelper";
-import { selectImage } from "../../../ImageSelector";
-import { uploadImage } from "../../../cloudinary";
+import { find, loadingProcess, update } from "../../../helpers/databaseHelper";
+import { selectImage } from "../../../helpers/ImageSelector";
+import { uploadImage } from "../../../helpers/cloudinary";
 import { updateCustomerUserName } from "../../../db/UpdateUser";
-import ProfileImageScreen from "../../../components/ProfileImage";
+import ProfileImageScreen from "../../components/ProfileImage";
 
 export default function CustomerEditProfileScreen({ navigation }) {
   const { userId, userName, userEmail, setUserName, userImage, setUserImage } =

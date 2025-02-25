@@ -12,9 +12,9 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
-import { get, loadingProcess, where } from "../../../databaseHelper";
+import { get, loadingProcess, where } from "../../../helpers/databaseHelper";
 import { useAppContext } from "../../../../AppProvider";
-import ListScreen from "../../../components/ListScreen";
+import ListScreen from "../../components/ListScreen";
 import { DateTimeConverter } from "../../../db/DateTimeConverter";
 
 const TransactionScreen = ({ navigation }) => {
@@ -86,7 +86,7 @@ const TransactionScreen = ({ navigation }) => {
           where("providerId", "==", userId)
           // where("status", "!=", "Rejected")
         );
-    
+
         const temp = snapData.docs.map((doc) => {
           const data = doc.data();
           return {
@@ -109,10 +109,10 @@ const TransactionScreen = ({ navigation }) => {
             address: data.address,
           };
         });
-    
+
         setAllTransactions(temp);
         setTransactions(temp);
-      })
+      });
 
       // return () => {
       //   setTransactions([])
@@ -158,7 +158,7 @@ const TransactionScreen = ({ navigation }) => {
   );
 
   const navigateOnDetails = (item) => {
-    navigation.navigate("JobStatus", { bookingId: item.id})
+    navigation.navigate("JobStatus", { bookingId: item.id });
     // navigation.navigate("JobStatus", {
     //   user: {
     //     id:item.customerId,
@@ -174,14 +174,12 @@ const TransactionScreen = ({ navigation }) => {
     //     completedAt: item.completedAt,
     //   },
     // })
-  }
+  };
 
   const TransactionCard = (item) => (
     <TouchableOpacity
       style={styles.transactionCard}
-      onPress={() =>
-        navigateOnDetails(item)
-      }
+      onPress={() => navigateOnDetails(item)}
     >
       <View style={styles.transactionHeader}>
         <View style={styles.customerInfo}>

@@ -20,9 +20,9 @@ import {
   loadingProcess,
   update,
   where,
-} from "../../../databaseHelper";
-import ProfileImageScreen from "../../../components/ProfileImage";
-import ListScreen from "../../../components/ListScreen";
+} from "../../../helpers/databaseHelper";
+import ProfileImageScreen from "../../components/ProfileImage";
+import ListScreen from "../../components/ListScreen";
 
 const CustomerBookingsScreen = ({ navigation }) => {
   const { userId, userRole, userName } = useAppContext();
@@ -89,7 +89,8 @@ const CustomerBookingsScreen = ({ navigation }) => {
         providerId,
         `${userName} Cancelled a booking`,
         `This booking has been cancelled.`,
-        "Bookings"
+        "JobStatus",
+        { bookingId: id }
       );
       await refresh();
     });
@@ -115,8 +116,8 @@ const CustomerBookingsScreen = ({ navigation }) => {
       <View key={booking.id}>
         <TouchableOpacity
           style={styles.bookingCard}
-          onPress={() =>
-            navigation.navigate("JobStatus", {bookingId: booking.id})
+          onPress={
+            () => navigation.navigate("JobStatus", { bookingId: booking.id })
             // navigation.navigate("JobStatus", {
             //   user: {
             //     id:

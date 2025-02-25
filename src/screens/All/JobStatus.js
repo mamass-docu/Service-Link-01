@@ -11,8 +11,8 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { updateDoc, doc } from "firebase/firestore";
-import { db } from "../../../firebase";
-import { useAppContext } from "../../../../AppProvider";
+import { db } from "../../db/firebase";
+import { useAppContext } from "../../../AppProvider";
 import {
   addNotif,
   find,
@@ -21,10 +21,10 @@ import {
   serverTimestamp,
   update,
   updateAllAsSeen,
-} from "../../../databaseHelper";
-import ProfileImageScreen from "../../../components/ProfileImage";
+} from "../../helpers/databaseHelper";
+import ProfileImageScreen from "../components/ProfileImage";
 import { useFocusEffect } from "@react-navigation/native";
-import { DateTimeConverter } from "../../../db/DateTimeConverter";
+import { DateTimeConverter } from "../../db/DateTimeConverter";
 
 const Status = ({ active, text, date, hideLine }) => {
   if (!date) return;
@@ -56,42 +56,41 @@ const JobStatusScreen = ({ route, navigation }) => {
   // const [showGoToJob, setShowGoToJob] = useState(true);
 
   const refresh = async () => {
-      const snap = await find("bookings", bookingId);
-      if (!snap.exists()) {
-        alert("Unable to find this booking!!!");
-        return;
-      }
-
-      const booking = snap.data();
-      const id =
-        userRole == "Provider" ? booking.customerId : booking.providerId;
-
-      const userSnap = await find("users", id);
-
-      setCurrentStatus(booking.status);
-      setCompletedAt(DateTimeConverter(booking.completedAt));
-      setProgressAt(DateTimeConverter(booking.progressAt));
-
-      setUser({
-        id: id,
-        bookingId: snap.id,
-        name:
-          userRole == "Provider" ? booking.customerName : booking.providerName,
-        image: userSnap.exists() ? userSnap.data().image : null,
-        date: booking.date,
-        time: booking.time,
-        address: booking.address,
-        // status: booking.status,
-        createdAt: DateTimeConverter(booking.createdAt),
-        confirmedAt: DateTimeConverter(booking.confirmedAt),
-        rejectedAt: DateTimeConverter(booking.rejectedAt),
-        // completedAt: DateTimeConverter(booking.completedAt),
-      });
+    const snap = await find("bookings", bookingId);
+    if (!snap.exists()) {
+      alert("Unable to find this booking!!!");
+      return;
     }
+
+    const booking = snap.data();
+    const id = userRole == "Provider" ? booking.customerId : booking.providerId;
+
+    const userSnap = await find("users", id);
+
+    setCurrentStatus(booking.status);
+    setCompletedAt(DateTimeConverter(booking.completedAt));
+    setProgressAt(DateTimeConverter(booking.progressAt));
+
+    setUser({
+      id: id,
+      bookingId: snap.id,
+      name:
+        userRole == "Provider" ? booking.customerName : booking.providerName,
+      image: userSnap.exists() ? userSnap.data().image : null,
+      date: booking.date,
+      time: booking.time,
+      address: booking.address,
+      // status: booking.status,
+      createdAt: DateTimeConverter(booking.createdAt),
+      confirmedAt: DateTimeConverter(booking.confirmedAt),
+      rejectedAt: DateTimeConverter(booking.rejectedAt),
+      // completedAt: DateTimeConverter(booking.completedAt),
+    });
+  };
 
   useFocusEffect(
     useCallback(() => {
-      updateAllAsSeen(userId, "JobStatus")
+      updateAllAsSeen(userId, "JobStatus");
       loadingProcess(refresh);
     }, [])
   );
@@ -113,7 +112,7 @@ const JobStatusScreen = ({ route, navigation }) => {
       bookingId: user?.bookingId,
     });
     setDateValue(DateTimeConverter(datetime));
-    await refresh()
+    await refresh();
     Alert.alert("Status Updated", alertMessage);
   };
 
@@ -210,7 +209,7 @@ const JobStatusScreen = ({ route, navigation }) => {
   };
 
   const onMessage = () => {
-    if (!user) return
+    if (!user) return;
 
     navigation.navigate("Message", {
       otherUserId: user.id,

@@ -14,8 +14,8 @@ import {
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useAppContext } from "../../../../AppProvider";
 import { useFocusEffect } from "@react-navigation/native";
-import { count, loadingProcess, where } from "../../../databaseHelper";
-import ProfileImageScreen from "../../../components/ProfileImage";
+import { count, loadingProcess, where } from "../../../helpers/databaseHelper";
+import ProfileImageScreen from "../../components/ProfileImage";
 import { logout } from "../../../db/UpdateUser";
 
 const MenuItem = ({ icon, title, subtitle, onPress, color = "#333" }) => (
@@ -142,7 +142,7 @@ const CustomerProfileScreen = ({ navigation }) => {
             </View>
             <TouchableOpacity
               style={styles.editButton}
-              onPress={() => navigation.navigate("CustomerEditProfile")}
+              onPress={() => navigation.navigate("EditProfile")}
             >
               <Icon name="pencil" size={20} color="#FFB800" />
             </TouchableOpacity>
@@ -184,13 +184,13 @@ const CustomerProfileScreen = ({ navigation }) => {
             icon="shield-check"
             title="Privacy & Security"
             subtitle="Password, security, personal data"
-            onPress={() => navigation.navigate("CustomerPrivacyAndSecurity")}
+            onPress={() => navigation.navigate("PrivacyAndSecurity")}
           />
           <MenuItem
             icon="help-circle"
             title="Help & Support"
             subtitle="FAQ, contact us, privacy policy"
-            onPress={() => navigation.navigate("CustomerHelpAndSupport")}
+            onPress={() => navigation.navigate("HelpAndSupport")}
           />
 
           <MenuItem

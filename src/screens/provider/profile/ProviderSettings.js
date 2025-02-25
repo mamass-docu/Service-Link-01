@@ -1,5 +1,4 @@
-// src/screens/ServiceProvider/ProviderSettings.js
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -10,8 +9,8 @@ import {
   StatusBar,
   Switch,
   Alert,
-} from 'react-native';
-import { Feather } from '@expo/vector-icons';
+} from "react-native";
+import { Feather } from "@expo/vector-icons";
 
 const ProviderSettings = ({ navigation }) => {
   const [settings, setSettings] = useState({
@@ -27,41 +26,37 @@ const ProviderSettings = ({ navigation }) => {
     availability: {
       autoAcceptBookings: false,
       showAvailability: true,
-    }
+    },
   });
 
   const handleSettingToggle = (category, setting) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
       [category]: {
         ...prev[category],
-        [setting]: !prev[category][setting]
-      }
+        [setting]: !prev[category][setting],
+      },
     }));
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      "Logout",
-      "Are you sure you want to logout?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel"
+    Alert.alert("Logout", "Are you sure you want to logout?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Logout",
+        onPress: () => {
+          // Add logout logic here
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Login" }],
+          });
         },
-        {
-          text: "Logout",
-          onPress: () => {
-            // Add logout logic here
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Login' }],
-            });
-          },
-          style: "destructive"
-        }
-      ]
-    );
+        style: "destructive",
+      },
+    ]);
   };
 
   const handleDeleteAccount = () => {
@@ -71,24 +66,32 @@ const ProviderSettings = ({ navigation }) => {
       [
         {
           text: "Cancel",
-          style: "cancel"
+          style: "cancel",
         },
         {
           text: "Delete",
           onPress: () => {
             // Add account deletion logic here
           },
-          style: "destructive"
-        }
+          style: "destructive",
+        },
       ]
     );
   };
 
-  const SettingItem = ({ icon, title, onPress, value, type = 'toggle', description, color = '#333' }) => (
-    <TouchableOpacity 
+  const SettingItem = ({
+    icon,
+    title,
+    onPress,
+    value,
+    type = "toggle",
+    description,
+    color = "#333",
+  }) => (
+    <TouchableOpacity
       style={styles.settingItem}
       onPress={onPress}
-      disabled={type === 'toggle'}
+      disabled={type === "toggle"}
     >
       <View style={styles.settingMain}>
         <View style={[styles.settingIcon, { backgroundColor: `${color}15` }]}>
@@ -101,12 +104,12 @@ const ProviderSettings = ({ navigation }) => {
           )}
         </View>
       </View>
-      {type === 'toggle' ? (
+      {type === "toggle" ? (
         <Switch
           value={value}
           onValueChange={onPress}
-          trackColor={{ false: '#E5E5E5', true: '#FFB80050' }}
-          thumbColor={value ? '#FFB800' : '#FFF'}
+          trackColor={{ false: "#E5E5E5", true: "#FFB80050" }}
+          thumbColor={value ? "#FFB800" : "#FFF"}
         />
       ) : (
         <Feather name="chevron-right" size={20} color="#CCC" />
@@ -120,7 +123,7 @@ const ProviderSettings = ({ navigation }) => {
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
@@ -139,7 +142,7 @@ const ProviderSettings = ({ navigation }) => {
               icon="lock"
               title="Change Password"
               type="navigation"
-              onPress={() => navigation.navigate('ChangePassword')}
+              onPress={() => navigation.navigate("ChangePassword")}
             />
           </View>
         </View>
@@ -152,19 +155,19 @@ const ProviderSettings = ({ navigation }) => {
               icon="bell"
               title="Booking Notifications"
               value={settings.notifications.bookings}
-              onPress={() => handleSettingToggle('notifications', 'bookings')}
+              onPress={() => handleSettingToggle("notifications", "bookings")}
             />
             <SettingItem
               icon="message-square"
               title="Message Notifications"
               value={settings.notifications.messages}
-              onPress={() => handleSettingToggle('notifications', 'messages')}
+              onPress={() => handleSettingToggle("notifications", "messages")}
             />
             <SettingItem
               icon="gift"
               title="Promotions & Updates"
               value={settings.notifications.promotions}
-              onPress={() => handleSettingToggle('notifications', 'promotions')}
+              onPress={() => handleSettingToggle("notifications", "promotions")}
             />
           </View>
         </View>
@@ -177,19 +180,19 @@ const ProviderSettings = ({ navigation }) => {
               icon="eye"
               title="Show Online Status"
               value={settings.privacy.showOnlineStatus}
-              onPress={() => handleSettingToggle('privacy', 'showOnlineStatus')}
+              onPress={() => handleSettingToggle("privacy", "showOnlineStatus")}
             />
             <SettingItem
               icon="map-pin"
               title="Share Location"
               value={settings.privacy.showLocation}
-              onPress={() => handleSettingToggle('privacy', 'showLocation')}
+              onPress={() => handleSettingToggle("privacy", "showLocation")}
             />
             <SettingItem
               icon="shield"
               title="Privacy Policy"
               type="navigation"
-              onPress={() => navigation.navigate('PrivacyPolicy')}
+              onPress={() => navigation.navigate("PrivacyPolicy")}
             />
           </View>
         </View>
@@ -202,13 +205,13 @@ const ProviderSettings = ({ navigation }) => {
               icon="help-circle"
               title="Help Center"
               type="navigation"
-              onPress={() => navigation.navigate('ProviderHelpAndSupport')}
+              onPress={() => navigation.navigate("HelpAndSupport")}
             />
             <SettingItem
               icon="file-text"
               title="Terms of Service"
               type="navigation"
-              onPress={() => navigation.navigate('Terms')}
+              onPress={() => navigation.navigate("Terms")}
             />
           </View>
         </View>
@@ -220,27 +223,27 @@ const ProviderSettings = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#F5F5F5',
+    borderBottomColor: "#F5F5F5",
   },
   backButton: {
     width: 40,
     height: 40,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+    justifyContent: "center",
+    alignItems: "flex-start",
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#333",
   },
   content: {
     flex: 1,
@@ -250,38 +253,38 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#333",
     marginBottom: 8,
     paddingHorizontal: 16,
   },
   sectionContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: '#F5F5F5',
+    borderColor: "#F5F5F5",
   },
   settingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderBottomWidth: 1,
-    borderBottomColor: '#F5F5F5',
+    borderBottomColor: "#F5F5F5",
   },
   settingMain: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   settingIcon: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 12,
   },
   settingInfo: {
@@ -289,11 +292,11 @@ const styles = StyleSheet.create({
   },
   settingTitle: {
     fontSize: 15,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   settingDescription: {
     fontSize: 13,
-    color: '#666',
+    color: "#666",
     marginTop: 2,
   },
 });

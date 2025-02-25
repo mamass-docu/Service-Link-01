@@ -1,6 +1,6 @@
-import { get, update, where, serverTimestamp } from "../databaseHelper";
+import { get, update, where, serverTimestamp } from "../helpers/databaseHelper";
 import { getAuth } from "firebase/auth";
-import { app } from "../firebase";
+import { app } from "./firebase";
 
 export const updateCustomerUserName = async (id, name) => {
   try {

@@ -17,13 +17,13 @@ import {
   specificLoadingProcess,
   update,
   useSelector,
-} from "../../databaseHelper";
+} from "../../helpers/databaseHelper";
 
 const CustomerTermsAndConditionsScreen = ({ navigation }) => {
   const [isAccepted, setIsAccepted] = useState(false);
   const { userId } = useAppContext();
 
-  const isLoading = useSelector(state => state.loading.specific)
+  const isLoading = useSelector((state) => state.loading.specific);
 
   const handleAcceptTerms = () => {
     if (!isAccepted) return;
@@ -36,7 +36,7 @@ const CustomerTermsAndConditionsScreen = ({ navigation }) => {
 
         navigation.reset({
           index: 0,
-          routes: [{ name: "CustomerHome" }],
+          routes: [{ name: "Main" }],
         });
       },
       (error) => {

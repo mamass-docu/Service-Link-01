@@ -3,11 +3,13 @@ import ProviderEditProfileScreen from "../src/screens/provider/profile/ProviderE
 import VerificationStatusScreen from "../src/screens/provider/profile/VerificationStatusScreen";
 import HelpSupportScreen from "../src/screens/provider/profile/HelpSupportScreen";
 import MyAvailabilityScreen from "../src/screens/provider/profile/MyAvailabilityScreen";
+// import PayBillsScreen from "../src/screens/provider/profile/PayBillsScreen";
 import ProviderSettings from "../src/screens/provider/profile/ProviderSettings";
 import BookingHelpScreen from "../src/screens/provider/profile/BookingHelpScreen";
 import AddServicesScreen from "../src/screens/provider/profile/AddServicesScreen";
 import BusinessHoursScreen from "../src/screens/provider/profile/BusinessHoursScreen";
 import ViewShopScreen from "../src/screens/provider/home/ShopScreen";
+import BookingsScreen from "../src/screens/provider/bookings/BookingsScreen";
 import MainDashboard from "../src/screens/provider/MainDashboard";
 import TransactionsScreen from "../src/screens/provider/profile/TransactionsScreen";
 import BusinessDocumentsScreen from "../src/screens/provider/ShopDocuments/BusinessDocumentsScreen";
@@ -15,19 +17,23 @@ import BusinessDocumentsScreen from "../src/screens/provider/ShopDocuments/Busin
 export const Providers = (Stack) => (
   <>
     <Stack.Screen
-      name="TermsAndConditions"
+      name="ProviderTermsAndConditions"
       component={TermsAndConditionsScreen}
     />
-    <Stack.Screen name="Main" component={MainDashboard} />
-    <Stack.Screen name="EditProfile" component={ProviderEditProfileScreen} />
+    <Stack.Screen name="ProviderHome" component={MainDashboard} />
+    <Stack.Screen
+      name="ProviderEditProfile"
+      component={ProviderEditProfileScreen}
+    />
     <Stack.Screen name="Transactions" component={TransactionsScreen} />
     <Stack.Screen
       name="VerificationStatus"
       component={VerificationStatusScreen}
     />
-    <Stack.Screen name="HelpAndSupport" component={HelpSupportScreen} />
+    <Stack.Screen name="ProviderHelpAndSupport" component={HelpSupportScreen} />
     <Stack.Screen name="MyAvailability" component={MyAvailabilityScreen} />
-    <Stack.Screen name="Settings" component={ProviderSettings} />
+    {/* <Stack.Screen name="PayBills" component={PayBillsScreen} /> */}
+    <Stack.Screen name="ProviderSettings" component={ProviderSettings} />
     <Stack.Screen name="BookingHelpScreen" component={BookingHelpScreen} />
     <Stack.Screen name="AddServices" component={AddServicesScreen} />
     <Stack.Screen
@@ -36,5 +42,6 @@ export const Providers = (Stack) => (
     />
     <Stack.Screen name="BusinessHours" component={BusinessHoursScreen} />
     <Stack.Screen name="Shop" component={ViewShopScreen} />
+    <Stack.Screen name="Bookings" component={BookingsScreen} />
   </>
 );

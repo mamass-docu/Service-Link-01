@@ -15,28 +15,37 @@ import SearchResultsScreen from "../src/screens/customer/SearchResults/SearchRes
 export const Customers = (Stack) => (
   <>
     <Stack.Screen
-      name="TermsAndConditions"
+      name="CustomerTermsAndConditions"
       component={CustomerTermsAndConditionsScreen}
     />
-    <Stack.Screen name="Main" component={CustomerMainDashboard} />
+    <Stack.Screen name="CustomerHome" component={CustomerMainDashboard} />
     <Stack.Screen name="Addresses" component={Addresses} />
-    <Stack.Screen name="EditProfile" component={CustomerEditProfileScreen} />
-    <Stack.Screen name="HelpAndSupport" component={HelpAndSupportScreen} />
     <Stack.Screen
-      name="PrivacyAndSecurity"
+      name="CustomerEditProfile"
+      component={CustomerEditProfileScreen}
+    />
+    <Stack.Screen
+      name="CustomerHelpAndSupport"
+      component={HelpAndSupportScreen}
+    />
+    <Stack.Screen
+      name="CustomerPrivacyAndSecurity"
       component={PrivacyAndSecurityScreen}
     />
 
-    <Stack.Screen name="MoreServices" component={MoreServices} />
-    <Stack.Screen name="ProviderOption" component={ProviderOptionScreen} />
+    <Stack.Screen name="CustomerMoreServices" component={MoreServices} />
+    <Stack.Screen
+      name="CustomerProviderOption"
+      component={ProviderOptionScreen}
+    />
 
     <Stack.Screen name="BookService" component={BookServiceScreen} />
-    <Stack.Screen
-      name="ServicesSearchResults"
-      component={SearchResultsScreen}
-    />
+    <Stack.Screen name="SearchResults" component={SearchResultsScreen} />
     <Stack.Screen name="PayMayaPayment" component={PayMayaPaymentScreen} />
     <Stack.Screen name="GCashPayment" component={GCashPaymentScreen} />
-    <Stack.Screen name="PaymentOptions" component={PaymentOptionsScreen} />
+    <Stack.Screen
+      name="PaymentOptionsScreen"
+      component={PaymentOptionsScreen}
+    />
   </>
 );

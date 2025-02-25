@@ -14,15 +14,14 @@ import { useAppContext } from "../../../../AppProvider";
 import { useFocusEffect } from "@react-navigation/native";
 import {
   addNotif,
-  all,
-  find,
   get,
   loadingProcess,
   serverTimestamp,
   update,
+  updateAllAsSeen,
   where,
-} from "../../../databaseHelper";
-import ListScreen from "../../../components/ListScreen";
+} from "../../../helpers/databaseHelper";
+import ListScreen from "../../components/ListScreen";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -145,50 +144,51 @@ const BookingsScreen = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
-      refresh();
+      loadingProcess(async () => {
+        updateAllAsSeen(userId, "BookingsTab");
+
+        const snapshot = await get(
+          "bookings",
+          where("providerId", "==", userId)
+        );
+        // const snapshot = await getDocs(
+        //   query(collection(db, "bookings"), where("providerId", "==", userId))
+        // );
+        // let temp = [];
+
+        // // const users = await all("users").docs.map(data => ({id:data.id, image: data.data().image}))
+
+        // for (const bookingsDoc of snapshot.docs) {
+        //   const bookingsData = bookingsDoc.data();
+        //   // const userSnap = await find("users", bookingsData.customerId);
+        //   // let image = null;
+
+        //   // for(let i in users){
+        //   //   const user = users[i].id
+        //   //   if (bookingsData.customerId == user.id){
+        //   //     image = user.image
+        //   //     break
+        //   //   }
+        //   // }
+
+        //   temp.push({
+        //     id: bookingsDoc.id,
+        //     ...bookingsData,
+        //     // customerImage: image,
+        //     // customerImage: userSnap.exists() ? userSnap.data().image : null,
+        //   });
+        // }
+
+        setBookings(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+        );
+        // setBookings(temp);
+      });
     }, [])
   );
-
-  async function refresh() {
-    loadingProcess(async () => {
-      const snapshot = await get("bookings", where("providerId", "==", userId));
-      // const snapshot = await getDocs(
-      //   query(collection(db, "bookings"), where("providerId", "==", userId))
-      // );
-      // let temp = [];
-
-      // // const users = await all("users").docs.map(data => ({id:data.id, image: data.data().image}))
-
-      // for (const bookingsDoc of snapshot.docs) {
-      //   const bookingsData = bookingsDoc.data();
-      //   // const userSnap = await find("users", bookingsData.customerId);
-      //   // let image = null;
-
-      //   // for(let i in users){
-      //   //   const user = users[i].id
-      //   //   if (bookingsData.customerId == user.id){
-      //   //     image = user.image
-      //   //     break
-      //   //   }
-      //   // }
-
-      //   temp.push({
-      //     id: bookingsDoc.id,
-      //     ...bookingsData,
-      //     // customerImage: image,
-      //     // customerImage: userSnap.exists() ? userSnap.data().image : null,
-      //   });
-      // }
-
-      setBookings(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-      );
-      // setBookings(temp);
-    });
-  }
 
   const handleAccept = async (bookingId, customerId) => {
     Alert.alert(
@@ -203,7 +203,7 @@ const BookingsScreen = ({ navigation }) => {
               async () => {
                 await update("bookings", bookingId, {
                   status: "Confirmed",
-                  confirmedAt: serverTimestamp()
+                  confirmedAt: serverTimestamp(),
                 });
 
                 addNotif(
@@ -247,7 +247,7 @@ const BookingsScreen = ({ navigation }) => {
               async () => {
                 await update("bookings", bookingId, {
                   status: "Declined",
-                  declinedAt: serverTimestamp()
+                  declinedAt: serverTimestamp(),
                 });
 
                 addNotif(

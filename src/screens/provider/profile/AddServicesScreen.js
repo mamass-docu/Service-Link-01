@@ -17,10 +17,13 @@ import { Feather } from "@expo/vector-icons";
 import { services } from "../../../services";
 import { useAppContext } from "../../../../AppProvider";
 import { useFocusEffect } from "@react-navigation/native";
-import { find, loadingProcess, update } from "../../../databaseHelper";
-import { selectImage } from "../../../ImageSelector";
-import { uploadImage } from "../../../cloudinary";
-import { updateProviderUserImage, updateProviderUserName } from "../../../db/UpdateUser";
+import { find, loadingProcess, update } from "../../../helpers/databaseHelper";
+import { selectImage } from "../../../helpers/ImageSelector";
+import { uploadImage } from "../../../helpers/cloudinary";
+import {
+  updateProviderUserImage,
+  updateProviderUserName,
+} from "../../../db/UpdateUser";
 
 const AddServicesScreen = ({ navigation }) => {
   const { userId, userName, userEmail, userImage, setUserName, setUserImage } =
@@ -74,7 +77,8 @@ const AddServicesScreen = ({ navigation }) => {
     setIsDropdownOpen(false);
   };
 
-  const isEmptyFromShopInfo  = (key) =>  !shopDetails[key] || shopDetails[key].trim() == ""
+  const isEmptyFromShopInfo = (key) =>
+    !shopDetails[key] || shopDetails[key].trim() == "";
 
   const validateForm = () => {
     if (isEmptyFromShopInfo("service")) {
@@ -114,37 +118,38 @@ const AddServicesScreen = ({ navigation }) => {
 
     loadingProcess(async () => {
       let data = shopDetails;
-  
+
       if (selectedImage) {
         // const imageName = selectedImage.fileName;
         // const imageExtension = imageName.substring(imageName.lastIndexOf("."));
-  
+
         // const file = {
         //   uri: selectedImage.uri,
         //   type: "image/jpeg",
         //   name: `${userId}${imageExtension}`,
         // };
-  
+
         const imageUrl = await uploadImage(selectedImage, userId);
-        await updateProviderUserImage(imageUrl)
+        await updateProviderUserImage(imageUrl);
         data.image = imageUrl;
         setUserImage(imageUrl);
-      } 
-      if (!data.image) delete data.image
-  
+      }
+      if (!data.image) delete data.image;
+
       await update("users", userId, data);
-  
-      if (userName !== data.name) await updateProviderUserName(userId, data.name);
-  
+
+      if (userName !== data.name)
+        await updateProviderUserName(userId, data.name);
+
       setUserName(data.name);
-  
+
       Alert.alert("Success", "Shop details saved successfully!", [
         {
           text: "OK",
           onPress: () => navigation.goBack(),
         },
       ]);
-    })
+    });
   };
 
   return (

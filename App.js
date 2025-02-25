@@ -11,24 +11,20 @@ import store from "./src/state/store";
 
 enableScreens();
 
-const Stack = createNativeStackNavigator();
-
 export default function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
         <AppProvider>
-          <Stack.Navigator
+          {/* <Stack.Navigator
             screenOptions={{
               headerShown: false,
               animation: "none",
               contentStyle: { backgroundColor: "white" },
             }}
-          >
-            {All(Stack)}
-            {Providers(Stack)}
-            {Customers(Stack)}
-          </Stack.Navigator>
+          > */}
+          <All />
+          {/* </Stack.Navigator> */}
         </AppProvider>
       </NavigationContainer>
     </Provider>

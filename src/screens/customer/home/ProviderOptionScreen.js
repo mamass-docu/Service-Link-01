@@ -12,8 +12,8 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
-import { get, loadingProcess, where } from "../../../databaseHelper";
-import ProfileImageScreen from "../../../components/ProfileImage";
+import { get, loadingProcess, where } from "../../../helpers/databaseHelper";
+import ProfileImageScreen from "../../components/ProfileImage";
 
 const ServiceDetailsModal = ({ visible, provider, onClose, onPress }) => {
   if (!provider) return null;

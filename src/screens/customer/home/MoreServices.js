@@ -149,7 +149,7 @@ const MoreServices = ({ navigation }) => {
               key={service.id}
               service={service}
               onPress={() =>
-                navigation.navigate("CustomerProviderOption", {
+                navigation.navigate("ProviderOption", {
                   service: service.name,
                 })
               }

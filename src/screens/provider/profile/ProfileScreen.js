@@ -14,11 +14,16 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { useAppContext } from "../../../../AppProvider";
 import { useFocusEffect } from "@react-navigation/native";
-import { update, loadingProcess, count, where } from "../../../databaseHelper";
-import { selectImage } from "../../../ImageSelector";
-import { uploadImage } from "../../../cloudinary";
+import {
+  update,
+  loadingProcess,
+  count,
+  where,
+} from "../../../helpers/databaseHelper";
+import { selectImage } from "../../../helpers/ImageSelector";
+import { uploadImage } from "../../../helpers/cloudinary";
 import { logout, updateProviderUserImage } from "../../../db/UpdateUser";
-import ProfileImageScreen from "../../../components/ProfileImage";
+import ProfileImageScreen from "../../components/ProfileImage";
 
 const ProfileScreen = ({ navigation }) => {
   const { userName, userId, userImage, setUserImage, setUserId } =
@@ -154,7 +159,7 @@ const ProfileScreen = ({ navigation }) => {
             <MenuItem
               icon="edit"
               title="Edit Profile"
-              onPress={() => navigation.navigate("ProviderEditProfile")}
+              onPress={() => navigation.navigate("EditProfile")}
             />
             <MenuItem
               icon="clock" // Changed icon to clock
@@ -179,12 +184,12 @@ const ProfileScreen = ({ navigation }) => {
             <MenuItem
               icon="help-circle"
               title="Help & Support"
-              onPress={() => navigation.navigate("ProviderHelpAndSupport")}
+              onPress={() => navigation.navigate("HelpAndSupport")}
             />
             <MenuItem
               icon="settings"
               title="Settings"
-              onPress={() => navigation.navigate("ProviderSettings")}
+              onPress={() => navigation.navigate("Settings")}
             />
             <MenuItem
               icon="log-out"
