@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "ServiceLink",
+    "slug": "service-link",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash_icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.juniorprogrammer.ServiceLink",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive_icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": ["VIBRATE", "ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
+      "config": {
+        "googleMaps": {
+          "apiKey": "your_api_key_here"
+        }
+      },
+      "package": "com.juniorprogrammer.ServiceLink"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b10b83ac-690e-4665-88b4-5e472d0dc70a"
+      }
+    },
+    "owner": "09052181646"
+  }
+}

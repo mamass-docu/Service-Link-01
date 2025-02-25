@@ -1,0 +1,160 @@
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  getCountFromServer,
+  where,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
+import { db } from "./firebase";
+import store from "./state/store";
+import {
+  openLoading,
+  closeLoading,
+  openSpecificLoading,
+  closeSpecificLoading,
+} from "./state/loadingSlice";
+import { useSelector } from "react-redux";
+
+const setIsLoading = (loading) => {
+  store.dispatch(loading ? openLoading() : closeLoading());
+};
+
+const loadingProcess = async (
+  processFunction: () => void,
+  onError: (error) => void = null
+) => {
+  try {
+    store.dispatch(openLoading());
+    await processFunction();
+  } catch (e) {
+    console.log("error in loading process", e);
+    if (onError != null) onError(e);
+  } finally {
+    store.dispatch(closeLoading());
+  }
+};
+
+const specificLoadingProcess = async (
+  processFunction: () => void,
+  onError: (error) => void = null
+) => {
+  try {
+    store.dispatch(openSpecificLoading());
+    await processFunction();
+  } catch (e) {
+    console.log("error in specific loading process", e);
+    if (onError != null) onError(e);
+  } finally {
+    store.dispatch(closeSpecificLoading());
+  }
+};
+
+const find = async (collectionName: string, uid: string) => {
+  return await getDoc(doc(db, collectionName, uid));
+};
+
+const all = async (collectionName: string) => {
+  return await getDocs(collection(db, collectionName));
+};
+
+const get = async (collectionName: string, ...whereCond) => {
+  return await getDocs(query(collection(db, collectionName), ...whereCond));
+};
+
+const set = async (collectionName: string, uid: string, data: {}) => {
+  return await setDoc(doc(db, collectionName, uid), data, { merge: true });
+};
+
+const add = async (collectionName: string, data: {}) => {
+  return await addDoc(collection(db, collectionName), data);
+};
+
+const update = async (collectionName: string, uid: string, data: {}) => {
+  await updateDoc(doc(db, collectionName, uid), data);
+};
+
+const remove = async (collectionName: string, uid: string) => {
+  await deleteDoc(doc(db, collectionName, uid));
+};
+
+const count = async (collectionName: string, ...whereCond) => {
+  const snap = await getCountFromServer(
+    query(collection(db, collectionName), ...whereCond)
+  );
+
+  return snap.data().count;
+};
+
+const addNotif = async (receiverId, title, body, screen, params) => {
+  let data = {
+    receiverId: receiverId,
+    title: title,
+    body: body,
+    screen: screen,
+    seen: false,
+    prompt: false,
+    sentAt: serverTimestamp(),
+  };
+  if (params) data["params"] = params;
+  await addDoc(collection(db, "notifications"), data);
+};
+
+const setNotifAsSeen = (id) => {
+  updateDoc(doc(db, "notifications", id), { seen: true, prompt: true });
+};
+
+const setNotifPrompt = (id) => {
+  updateDoc(doc(db, "notifications", id), { prompt: true });
+};
+
+const updateAllAsSeen = async (userId, screen) => {
+  const snap = await get(
+    "notifications",
+    where("receiverId", "==", userId),
+    where("screen", "==", screen),
+    where("seen", "==", false)
+  );
+  snap.docs.forEach((item) => {
+    updateDoc(doc(db, "notifications", item.id), { seen: true, prompt: true });
+  });
+};
+
+const getNotifCount = async (userId: string) => {
+  const snap = await getCountFromServer(
+    query(
+      collection(db, "notifications"),
+      where("receiverId", "==", userId),
+      where("seen", "==", false)
+    )
+  );
+  return snap.data().count;
+};
+
+export {
+  useSelector,
+  setIsLoading,
+  loadingProcess,
+  specificLoadingProcess,
+  get,
+  all,
+  find,
+  add,
+  set,
+  getNotifCount,
+  update,
+  setNotifPrompt,
+  updateAllAsSeen,
+  count,
+  remove,
+  addNotif,
+  setNotifAsSeen,
+  where,
+  serverTimestamp,
+};
