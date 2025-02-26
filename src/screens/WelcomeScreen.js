@@ -28,7 +28,9 @@ export default function WelcomeScreen({ navigation }) {
 
     checkIntro();
 
-    return () => clearTimeout(timer); // ✅ Cleanup timeout properly
+    return () => {
+      clearTimeout(timer); // ✅ Cleanup timeout properly
+    };
   }, []);
 
   return (

@@ -15,8 +15,8 @@ import {
   StyleSheet,
 } from "react-native";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-import { app } from "../../db/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../db/firebase";
 import {
   serverTimestamp,
   set,
@@ -25,7 +25,6 @@ import {
 } from "../../helpers/databaseHelper";
 
 export default function SignupScreen({ navigation, route }) {
-  const auth = getAuth(app);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { role } = route.params;

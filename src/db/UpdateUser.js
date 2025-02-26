@@ -1,6 +1,5 @@
 import { get, update, where, serverTimestamp } from "../helpers/databaseHelper";
-import { getAuth } from "firebase/auth";
-import { app } from "./firebase";
+import { auth } from "./firebase";
 
 export const updateCustomerUserName = async (id, name) => {
   try {
@@ -56,7 +55,8 @@ export const updateProviderUserImage = async (id, image) => {
 };
 
 export const logout = async (userId, setUserId) => {
-  const auth = getAuth(app);
+  console.log("logout");
+
   await update("users", userId, {
     isOnline: false,
     lastSeen: serverTimestamp(),

@@ -55,7 +55,8 @@ export default function MessengerScreen({ navigation }) {
       });
       const messengerQuery = query(
         collection(db, "users"),
-        where("role", "!=", "Admin")
+        where("role", "!=", "Admin"),
+        where("active", "==", true)
       );
 
       unsubscribeActive = onSnapshot(messengerQuery, (snapshot) => {

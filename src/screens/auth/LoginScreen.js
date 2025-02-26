@@ -16,8 +16,8 @@ import {
   Dimensions,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { app } from "../../db/firebase";
-import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
+import { auth } from "../../db/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useAppContext } from "../../../AppProvider";
 import {
   find,
@@ -40,8 +40,6 @@ export default function LoginScreen({ navigation }) {
     useAppContext();
 
   const isLoading = useSelector((state) => state.loading.specific);
-
-  const auth = getAuth(app);
 
   // const {
   //   data,

@@ -1,5 +1,10 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, enableIndexedDbPersistence } from "firebase/firestore";
+import { getAuth, initializeAuth } from "firebase/auth";
+import {
+  getFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBOndErzcVbIpf6NWvacPQuv35rJnJ8VNs",
@@ -12,23 +17,10 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+// const db = getFirestore(app);
+
+const auth = getAuth(app);
+
 const db = getFirestore(app);
 
-// clearIndexedDbPersistence(db).then(() => {
-//   console.log("Persistence cleared");
-// }).catch((error) => {
-//   console.error("Error clearing persistence: ", error);
-// });
-enableIndexedDbPersistence(db)
-  .then(() => {
-    console.log("Persistence is enabled");
-  })
-  .catch((err) => {
-    if (err.code === 'failed-precondition') {
-      console.error("Persistence failed: Multiple tabs open.");
-    } else if (err.code === 'unimplemented') {
-      console.error("Persistence is not supported by the browser.");
-    }
-  });
-
-export { app, db };
+export { db, auth };

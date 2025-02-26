@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import * as Notifications from "expo-notifications";
 import LoadingScreen from "./src/screens/components/LoadingScreen";
-import { useNavigation, useNavigationState } from "@react-navigation/native";
-import { AppState } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+// import { AppState } from "react-native";
 import { db } from "./src/db/firebase";
 import {
   collection,
@@ -28,12 +28,12 @@ export const AppProvider = ({ children }) => {
   const [userEmail, setUserEmail] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [userImage, setUserImage] = useState(null);
-  const [appState, setAppState] = useState(AppState.currentState);
+  // const [appState, setAppState] = useState(AppState.currentState);
   // const [notifCount, setNotifCount] = useState(0);
 
   const notificationListenerRef = useRef(null);
   const notifClickListenerRef = useRef(null);
-  const appStateListenerRef = useRef(null);
+  // const appStateListenerRef = useRef(null);
 
   const navigation = useNavigation();
 
@@ -69,14 +69,14 @@ export const AppProvider = ({ children }) => {
 
     requestPermissions();
 
-    appStateListenerRef.current = AppState.addEventListener(
-      "change",
-      (nextState) => {
-        console.log(nextState);
+    // appStateListenerRef.current = AppState.addEventListener(
+    //   "change",
+    //   (nextState) => {
+    //     console.log(nextState);
 
-        setAppState(nextState);
-      }
-    );
+    //     setAppState(nextState);
+    //   }
+    // );
 
     return () => {
       const lg = async () => {
@@ -91,7 +91,7 @@ export const AppProvider = ({ children }) => {
 
   const removeListeners = () => {
     if (notifClickListenerRef.current) notifClickListenerRef.current.remove();
-    if (appStateListenerRef.current) appStateListenerRef.current.remove();
+    // if (appStateListenerRef.current) appStateListenerRef.current.remove();
     if (notificationListenerRef.current) notificationListenerRef.current();
   };
 
@@ -118,14 +118,14 @@ export const AppProvider = ({ children }) => {
         const screen = data?.screen;
         if (!screen) return;
 
-        if (appState === "active") {
-          navigation.navigate(screen, data.params);
-          return;
-        }
+        // if (appState === "active") {
+        //   navigation.navigate(screen, data.params);
+        //   return;
+        // }
 
-        console.log(AppState.currentState, "cur state", appState);
+        // console.log(AppState.currentState, "cur state", appState);
 
-        if (AppState.currentState !== "active") return;
+        // if (AppState.currentState !== "active") return;
 
         navigation.navigate(screen, data.params);
       });

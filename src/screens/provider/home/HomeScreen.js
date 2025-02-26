@@ -98,10 +98,15 @@ const HomeScreen = () => {
   const [totalTodaysEarnings, setTotalTodaysEarnings] = useState(0);
   const [upcomingJobs, setUpcomingJobs] = useState([]);
   const [notifCount, setNotifCount] = useState(0);
+  const [verified, setVerified] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
-      loadingProcess(refresh);
+      loadingProcess(async () => {
+        const snap = await find("users", userId);
+        setVerified(snap.data().verified);
+        await refresh();
+      });
     }, [])
   );
 
@@ -308,10 +313,22 @@ const HomeScreen = () => {
               ({providerStats.reviewCount} reviews)
             </Text>
           </View>
-          <Text style={styles.verifiedText}>
-            <Icon name="check-circle" size={16} color="#4CAF50" /> Verified
-            Provider
-          </Text>
+          {verified ? (
+            <Text style={styles.verifiedText}>
+              <Icon name="check-circle" size={16} color="#4CAF50" /> Verified
+              Provider
+            </Text>
+          ) : (
+            <Text
+              style={{
+                color: "#e67f12",
+                fontSize: 14,
+              }}
+            >
+              <Icon name="check-circle" size={16} color="#e67f12" /> Not
+              Verified Provider
+            </Text>
+          )}
         </View>
       </View>
 

@@ -16,7 +16,7 @@ import {
   StatusBar,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { app } from "../../db/firebase";
+import { auth } from "../../db/firebase";
 import { loadingProcess } from "../../helpers/databaseHelper";
 
 const ChangePasswordScreen = ({ navigation }) => {
@@ -32,7 +32,6 @@ const ChangePasswordScreen = ({ navigation }) => {
 
     loadingProcess(
       async () => {
-        const auth = getAuth(app);
         const user = auth.currentUser;
 
         const credential = EmailAuthProvider.credential(

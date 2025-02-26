@@ -22,6 +22,7 @@ import {
   find,
   loadingProcess,
   serverTimestamp,
+  set,
 } from "../../../helpers/databaseHelper";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -107,55 +108,60 @@ const VerificationStatusScreen = ({ navigation, route }) => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [percentage, setPercentage] = useState(25);
-  const [verificationStatus, setVerificationStatus] = useState({
-    profileRegistration: true,
-    serviceAdded: true,
-    documentsUploaded: true,
-    availabilitySet: true,
-    adminApproval: false,
-  });
 
-  const [steps, setSteps] = useState([
-    {
-      step: 1,
-      title: "Business Profile Registration",
-      description: "Basic business information setup",
-      status: "completed",
-      icon: "check-circle",
-    },
-    {
-      step: 2,
-      title: "Add Business Services",
-      description: "Select the services your business provides.",
-      status: "current",
-      icon: "plus-circle",
-    },
-    {
-      step: 3,
-      title: "Business Documents",
-      description: "Upload all required business documents and permits.",
-      status: "current",
-      icon: "upload",
-    },
-    {
-      step: 4,
-      title: "Business Hours",
-      description: "Set your business operating hours and availability.",
-      status: "current",
-      icon: "clock",
-    },
-    {
-      step: 5,
-      title: "Business Verification",
-      description: "Final review and verification of your business details.",
-      status: "current",
-      icon: "shield",
-    },
-  ]);
+  const [steps, setSteps] = useState([]);
+
+  const setStepsData = (a, b, c) => {
+    setSteps([
+      {
+        step: 1,
+        title: "Business Profile Registration",
+        description: "Basic business information setup",
+        status: "completed",
+        icon: "check-circle",
+      },
+      {
+        step: 2,
+        title: "Add Business Services",
+        description: "Select the services your business provides.",
+        status: a ? "completed" : "current",
+        icon: "plus-circle",
+      },
+      {
+        step: 3,
+        title: "Business Documents",
+        description: "Upload all required business documents and permits.",
+        status: b ? "completed" : "current",
+        icon: "upload",
+      },
+      {
+        step: 4,
+        title: "Business Hours",
+        description: "Set your business operating hours and availability.",
+        status: c ? "completed" : "current",
+        icon: "clock",
+      },
+      {
+        step: 5,
+        title: "Business Verification",
+        description: "Final review and verification of your business details.",
+        status: "current",
+        icon: "shield",
+      },
+    ]);
+  };
 
   useFocusEffect(
     useCallback(() => {
       loadingProcess(async () => {
+        const verSnap = await find("toVerifyProviders", userId);
+        if (verSnap.exists()) {
+          setStepsData(true, true, true);
+          setIsSubmitted(true);
+          setPercentage(100);
+          return;
+        }
+
         let percent = 25;
         const userSnap = await find("users", userId);
         const userData = userSnap.data();
@@ -166,44 +172,8 @@ const VerificationStatusScreen = ({ navigation, route }) => {
 
         const busHoursSnap = await find("providerBusinessHours", userId);
         if (busHoursSnap.exists()) percent += 25;
-        setSteps([
-          {
-            step: 1,
-            title: "Business Profile Registration",
-            description: "Basic business information setup",
-            status: "completed",
-            icon: "check-circle",
-          },
-          {
-            step: 2,
-            title: "Add Business Services",
-            description: "Select the services your business provides.",
-            status: userData.service ? "completed" : "current",
-            icon: "plus-circle",
-          },
-          {
-            step: 3,
-            title: "Business Documents",
-            description: "Upload all required business documents and permits.",
-            status: docSnap.exists() ? "completed" : "current",
-            icon: "upload",
-          },
-          {
-            step: 4,
-            title: "Business Hours",
-            description: "Set your business operating hours and availability.",
-            status: busHoursSnap.exists() ? "completed" : "current",
-            icon: "clock",
-          },
-          {
-            step: 5,
-            title: "Business Verification",
-            description:
-              "Final review and verification of your business details.",
-            status: "current",
-            icon: "shield",
-          },
-        ]);
+
+        setStepsData(userData.service, docSnap.exists(), busHoursSnap.exists());
         setPercentage(percent);
       });
     }, [])
@@ -246,9 +216,15 @@ const VerificationStatusScreen = ({ navigation, route }) => {
     }
 
     loadingProcess(async () => {
-      await add("toVerifyProviders", {
-        providerId: userId,
-        verified: false,
+      const snap = await find("users", userId);
+      const userData = snap.data();
+      await set("toVerifyProviders", userId, {
+        name: userData.name,
+        service: userData.service,
+        email: userData.email,
+        phoneNumber: userData.phoneNumber,
+        // name: userData.name,
+        status: "Pending",
         sentAt: serverTimestamp(),
       });
       setShowSuccess(true);
