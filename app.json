@@ -24,12 +24,6 @@
         "foregroundImage": "./assets/adaptive_icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["VIBRATE", "ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
-      "config": {
-        "googleMaps": {
-          "apiKey": "your_api_key_here"
-        }
-      },
       "package": "com.juniorprogrammer.ServiceLink"
     },
     "web": {

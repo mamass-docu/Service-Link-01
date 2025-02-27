@@ -26,10 +26,7 @@ const setIsLoading = (loading) => {
   store.dispatch(loading ? openLoading() : closeLoading());
 };
 
-const loadingProcess = async (
-  processFunction: () => void,
-  onError: (error) => void = null
-) => {
+const loadingProcess = async (processFunction, onError = null) => {
   try {
     store.dispatch(openLoading());
     await processFunction();
@@ -41,10 +38,7 @@ const loadingProcess = async (
   }
 };
 
-const specificLoadingProcess = async (
-  processFunction: () => void,
-  onError: (error) => void = null
-) => {
+const specificLoadingProcess = async (processFunction, onError = null) => {
   try {
     store.dispatch(openSpecificLoading());
     await processFunction();
@@ -56,35 +50,35 @@ const specificLoadingProcess = async (
   }
 };
 
-const find = async (collectionName: string, uid: string) => {
+const find = async (collectionName, uid) => {
   return await getDoc(doc(db, collectionName, uid));
 };
 
-const all = async (collectionName: string) => {
+const all = async (collectionName) => {
   return await getDocs(collection(db, collectionName));
 };
 
-const get = async (collectionName: string, ...whereCond) => {
+const get = async (collectionName, ...whereCond) => {
   return await getDocs(query(collection(db, collectionName), ...whereCond));
 };
 
-const set = async (collectionName: string, uid: string, data: {}) => {
+const set = async (collectionName, uid, data) => {
   return await setDoc(doc(db, collectionName, uid), data, { merge: true });
 };
 
-const add = async (collectionName: string, data: {}) => {
+const add = async (collectionName, data) => {
   return await addDoc(collection(db, collectionName), data);
 };
 
-const update = async (collectionName: string, uid: string, data: {}) => {
+const update = async (collectionName, uid, data) => {
   await updateDoc(doc(db, collectionName, uid), data);
 };
 
-const remove = async (collectionName: string, uid: string) => {
+const remove = async (collectionName, uid) => {
   await deleteDoc(doc(db, collectionName, uid));
 };
 
-const count = async (collectionName: string, ...whereCond) => {
+const count = async (collectionName, ...whereCond) => {
   const snap = await getCountFromServer(
     query(collection(db, collectionName), ...whereCond)
   );
@@ -122,7 +116,7 @@ const updateAllAsSeen = async (userId, screen) => {
   });
 };
 
-const getNotifCount = async (userId: string) => {
+const getNotifCount = async (userId) => {
   const snap = await getCountFromServer(
     query(
       collection(db, "notifications"),

@@ -51,7 +51,7 @@ const BookServiceScreen = ({ route, navigation }) => {
   useEffect(() => {
     loadingProcess(async () => {
       const snap = await find("users", userId);
-      if (!snap.exists()) return;
+      if (!snap.exists() || !snap.data().addresses) return;
 
       setAddresses(
         snap.data().addresses.map((item) => {
