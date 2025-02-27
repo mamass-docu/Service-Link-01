@@ -5,9 +5,10 @@ const uploadImage = async (file, filename) => {
   const imageExtension = file.fileName.substring(
     file.fileName.lastIndexOf(".")
   );
+
   const param = {
     uri: file.uri,
-    type: file.type,
+    type: "image/jpeg",
     name: filename + imageExtension,
   };
 

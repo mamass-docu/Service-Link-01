@@ -176,11 +176,11 @@ const ProfileScreen = ({ navigation }) => {
               title="Verification Status"
               onPress={() => navigation.navigate("VerificationStatus")}
             />
-            {/* <MenuItem
+            <MenuItem
               icon="credit-card"
               title="Pay Bills"
               onPress={() => navigation.navigate("PayBills")}
-            /> */}
+            />
             <MenuItem
               icon="help-circle"
               title="Help & Support"

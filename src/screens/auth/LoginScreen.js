@@ -32,8 +32,8 @@ export default function LoginScreen({ navigation }) {
   const [showPassword, setShowPassword] = useState(false);
   // const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: "carrepair@gmail.com",
+    password: "password",
   });
 
   const { setUserId, setUserName, setUserRole, setUserEmail, setUserImage } =

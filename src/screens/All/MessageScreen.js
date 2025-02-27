@@ -16,13 +16,13 @@ import {
   SafeAreaView,
   ActivityIndicator,
   ScrollView,
+  Image,
   Platform,
   KeyboardAvoidingView,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { db } from "../../db/firebase";
 import { useAppContext } from "../../../AppProvider";
-import ListScreen from "../components/ListScreen";
 import ProfileImageScreen from "../components/ProfileImage";
 import {
   addNotif,
@@ -35,9 +35,12 @@ import {
 } from "../../helpers/databaseHelper";
 import { DateTimeConverter } from "../../db/DateTimeConverter";
 import EmptyScreen from "../components/EmptyScreen";
+import { selectImage } from "../../helpers/ImageSelector";
+import { uploadImage } from "../../helpers/cloudinary";
 
 const MessageScreen = ({ route, navigation }) => {
   const [messages, setMessages] = useState([]);
+  const [isSendingImage, setIsSendingImage] = useState(false);
 
   const [newMessage, setNewMessage] = useState("");
   const { userId, userName, userImage } = useAppContext();
@@ -87,6 +90,7 @@ const MessageScreen = ({ route, navigation }) => {
           temp.push({
             id: dc.id,
             message: message.message,
+            image: message.image,
             isUserSender: message.senderId == userId,
             seen: message.seen,
             sentAt: strDatetime,
@@ -111,15 +115,14 @@ const MessageScreen = ({ route, navigation }) => {
     if (isLoading || newMessage.trim() == "") return;
 
     specificLoadingProcess(async () => {
-      const newMsg = {
+      setNewMessage("");
+      await addDoc(collection(db, "messages"), {
         participants: [userId, otherUserId],
         message: newMessage,
         seen: false,
         sentAt: serverTimestamp(),
         senderId: userId,
-      };
-      setNewMessage("");
-      await addDoc(collection(db, "messages"), newMsg);
+      });
       let params = { otherUserId: userId, otherUserName: userName };
       if (userImage) params["otherUserImage"] = userImage;
       addNotif(
@@ -130,6 +133,46 @@ const MessageScreen = ({ route, navigation }) => {
         params
       );
     });
+  };
+
+  const onSendImage = async () => {
+    if (isSendingImage) return;
+
+    const image = await selectImage();
+    if (!image) return;
+
+    setIsSendingImage(true);
+    try {
+      const imageUrl = await uploadImage(image, `image_${Date.now()}`);
+      if (!imageUrl) {
+        alert("Unable to save image!!!");
+        return;
+      }
+
+      await addDoc(collection(db, "messages"), {
+        participants: [userId, otherUserId],
+        message: "Sent a image",
+        image: imageUrl,
+        seen: false,
+        sentAt: serverTimestamp(),
+        senderId: userId,
+      });
+      let params = { otherUserId: userId, otherUserName: userName };
+      if (userImage) params["otherUserImage"] = userImage;
+      addNotif(
+        otherUserId,
+        `Message from ${otherUserName}`,
+        "Sent a image",
+        "Message",
+        params
+      );
+    } catch (e) {
+      console.log(e, "error sending image");
+
+      alert("Error sending image!!!");
+    } finally {
+      setIsSendingImage(false);
+    }
   };
 
   // function getDateTime() {
@@ -160,9 +203,6 @@ const MessageScreen = ({ route, navigation }) => {
             width: 36,
             height: 36,
             borderRadius: 28,
-            // backgroundColor: "#F0F0F0",
-            // justifyContent: "center",
-            // alignItems: "center",
             marginRight: 8,
           }}
           textSize={18}
@@ -195,14 +235,27 @@ const MessageScreen = ({ route, navigation }) => {
         {!item.isUserSender && (
           <Text style={styles.senderName}>{otherUserName}</Text>
         )}
-        <Text
-          style={[
-            styles.messageText,
-            item.isUserSender && styles.sentMessageText,
-          ]}
-        >
-          {item.message}
-        </Text>
+        {item.image ? (
+          <Image
+            source={{ uri: item.image }}
+            resizeMode="contain"
+            style={{
+              width: 120,
+              aspectRatio: 1,
+              maxHeight: 160,
+              borderRadius: 5,
+            }}
+          />
+        ) : (
+          <Text
+            style={[
+              styles.messageText,
+              item.isUserSender && styles.sentMessageText,
+            ]}
+          >
+            {item.message}
+          </Text>
+        )}
         <Text style={[styles.timeText]}>{item.sentAt ?? "Sending..."}</Text>
       </View>
     </View>
@@ -232,7 +285,9 @@ const MessageScreen = ({ route, navigation }) => {
         ) : (
           <ScrollView
             ref={scrollViewRef}
-            onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+            onContentSizeChange={() =>
+              scrollViewRef.current?.scrollToEnd({ animated: true })
+            }
             contentContainerStyle={styles.messageList}
             scrollEventThrottle={16}
           >
@@ -251,8 +306,12 @@ const MessageScreen = ({ route, navigation }) => {
       /> */}
 
         <View style={styles.inputContainer}>
-          <TouchableOpacity style={styles.attachButton}>
-            <Icon name="plus" size={24} color="#666" />
+          <TouchableOpacity onPress={onSendImage} style={styles.attachButton}>
+            {isSendingImage ? (
+              <ActivityIndicator size="small" color="#666" />
+            ) : (
+              <Icon name="plus" size={24} color="#666" />
+            )}
           </TouchableOpacity>
           <TextInput
             style={styles.input}

@@ -12,6 +12,7 @@ import MainDashboard from "../src/screens/provider/MainDashboard";
 import TransactionsScreen from "../src/screens/provider/profile/TransactionsScreen";
 import BusinessDocumentsScreen from "../src/screens/provider/ShopDocuments/BusinessDocumentsScreen";
 import ProviderHelpSupportScreen from "../src/screens/provider/profile/ProviderHelpAndSupportScreen";
+import PayBillsScreen from "../src/screens/provider/profile/PayBillsScreen";
 
 export const Providers = (Stack) => (
   <>
@@ -37,5 +38,6 @@ export const Providers = (Stack) => (
     />
     <Stack.Screen name="BusinessHours" component={BusinessHoursScreen} />
     <Stack.Screen name="Shop" component={ViewShopScreen} />
+    <Stack.Screen name="PayBills" component={PayBillsScreen} />
   </>
 );

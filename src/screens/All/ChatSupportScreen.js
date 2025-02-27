@@ -34,12 +34,15 @@ import {
   specificLoadingProcess,
   useSelector,
 } from "../../helpers/databaseHelper";
+import { selectImage } from "../../helpers/ImageSelector";
+import { uploadImage } from "../../helpers/cloudinary";
 
 const ChatSupportScreen = ({ navigation }) => {
   const { userId } = useAppContext();
   const [message, setMessage] = useState("");
   const scrollViewRef = useRef(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isSendingImage, setIsSendingImage] = useState(false);
 
   const [messages, setMessages] = useState([]);
 
@@ -58,6 +61,7 @@ const ChatSupportScreen = ({ navigation }) => {
           return {
             id: dc.id,
             message: message.message,
+            image: message.image,
             isUser: message.isUser,
             sentAt: DateTimeConverter(message.sentAt),
           };
@@ -98,6 +102,36 @@ const ChatSupportScreen = ({ navigation }) => {
       setMessage("");
     });
     // scrollViewRef.current?.scrollToEnd({ animated: true });
+  };
+
+  const onSendImage = async () => {
+    if (isSendingImage) return;
+
+    const image = await selectImage();
+    if (!image) return;
+
+    setIsSendingImage(true);
+    try {
+      const imageUrl = await uploadImage(image, `image_${Date.now()}`);
+      if (!imageUrl) {
+        alert("Unable to save image!!!");
+        return;
+      }
+
+      await addDoc(collection(db, "supportChats"), {
+        message: "Sent a image",
+        image: imageUrl,
+        isUser: true,
+        sentAt: serverTimestamp(),
+        senderId: userId,
+      });
+    } catch (e) {
+      console.log(e, "error sending image");
+
+      alert("Error sending image!!!");
+    } finally {
+      setIsSendingImage(false);
+    }
   };
 
   return (
@@ -175,14 +209,27 @@ const ChatSupportScreen = ({ navigation }) => {
               msg.isUser ? styles.userMessage : styles.adminMessage,
             ]}
           >
-            <Text
-              style={[
-                styles.messageText,
-                msg.isUser ? styles.userMessageText : styles.adminMessageText,
-              ]}
-            >
-              {msg.message}
-            </Text>
+            {msg.image ? (
+              <Image
+                source={{ uri: msg.image }}
+                resizeMode="contain"
+                style={{
+                  width: 120,
+                  aspectRatio: 1,
+                  maxHeight: 160,
+                  borderRadius: 5,
+                }}
+              />
+            ) : (
+              <Text
+                style={[
+                  styles.messageText,
+                  msg.isUser ? styles.userMessageText : styles.adminMessageText,
+                ]}
+              >
+                {msg.message}
+              </Text>
+            )}
           </View>
         ))}
       </ScrollView>
@@ -193,15 +240,19 @@ const ChatSupportScreen = ({ navigation }) => {
         style={styles.inputContainer}
       >
         <View style={styles.inputWrapper}>
-          <TouchableOpacity style={styles.iconButton}>
+          {/* <TouchableOpacity style={styles.iconButton}>
             <Feather name="paperclip" size={20} color="#666" />
+          </TouchableOpacity> */}
+          <TouchableOpacity onPress={onSendImage} style={styles.iconButton}>
+            {isSendingImage ? (
+              <ActivityIndicator size="small" color="#666" />
+            ) : (
+              <Feather name="image" size={20} color="#666" />
+            )}
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <Feather name="image" size={20} color="#666" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
+          {/* <TouchableOpacity style={styles.iconButton}>
             <Feather name="smile" size={20} color="#666" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TextInput
             style={styles.input}
             placeholder="Enter your message..."
