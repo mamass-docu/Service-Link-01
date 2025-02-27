@@ -71,19 +71,18 @@ const ChatSupportScreen = ({ navigation }) => {
     };
   }, []);
 
-  const handleDeleteConversation = () => {
+  const handleDeleteConversation = async () => {
+    setIsModalVisible(false);
     if (messages.length == 0) {
       alert("No conversation to delete!!!");
       return;
     }
 
-    loadingProcess(async () => {
-      for (let i in messages) {
-        await remove("supportChats", messages[i].id);
-      }
-      setMessages([]);
-      setIsModalVisible(false);
-    });
+    for (let i in messages) {
+      await remove("supportChats", messages[i].id);
+    }
+    // setMessages([]);
+    alert("Successfully deleted conversation.");
   };
 
   const handleSendMessage = () => {
