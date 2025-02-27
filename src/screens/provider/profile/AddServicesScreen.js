@@ -130,7 +130,7 @@ const AddServicesScreen = ({ navigation }) => {
         // };
 
         const imageUrl = await uploadImage(selectedImage, userId);
-        await updateProviderUserImage(imageUrl);
+        await updateProviderUserImage(userId, imageUrl);
         data.image = imageUrl;
         setUserImage(imageUrl);
       }
